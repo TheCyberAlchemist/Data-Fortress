@@ -3,8 +3,15 @@
   windows_subsystem = "windows"
 )]
 
+mod functions;
+mod encrypt;
+mod decrypt;
+
+// mod test;
 fn main() {
   tauri::Builder::default()
+    .plugin(encrypt::init())
+    .plugin(decrypt::init())
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
