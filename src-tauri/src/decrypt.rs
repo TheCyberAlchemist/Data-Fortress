@@ -1,4 +1,4 @@
-use std::io::{Read, Seek, SeekFrom};
+use std::{path::Path,io::{Read, Seek, SeekFrom,Write}};
 use crate::functions::*;
 use crypto_api_chachapoly::{XChaCha20};
 use rayon::prelude::*;
@@ -7,10 +7,9 @@ use tauri::{
     AppHandle,Runtime
 };
 
-pub fn decrypt(file_name: &str,dist_file_name: &str,key: &[u8],chunk_size:usize){
+pub fn decrypt(file_name: &str,dest_file_name: &str,key: &[u8],chunk_size:usize)-> Result<String, String> {
 	let mut buf = Vec::new();
 
-	
 	let mut file = std::fs::File::open(file_name).unwrap();
 
 	// read the whole file into buff
@@ -29,7 +28,16 @@ pub fn decrypt(file_name: &str,dist_file_name: &str,key: &[u8],chunk_size:usize)
             let chunk_size = chunk.len();
             cipher.decrypt(chunk, chunk_size, key, &nonce).unwrap();
         });
-	std::fs::write(dist_file_name, &buf).unwrap();
+	std::fs::create_dir_all(Path::new(dest_file_name).parent().unwrap()).unwrap();
+
+	let mut dist_file = match std::fs::OpenOptions::new().write(true).create(true).open(dest_file_name) {
+		Ok(file) => file,
+		Err(e) => panic!("Failed to create file {}: {}", dest_file_name, e),
+	};
+	dist_file.write_all(&buf).unwrap();
+
+	Ok("Decryption successful".to_string())
+
 }
 
 #[tauri::command]
@@ -53,8 +61,13 @@ pub async fn decrypt_file<R: Runtime>(src_file_name: &str,dest_file_name: &str, 
 		return Err("Password is not correct".to_string())
 	}
 	println!("Password is correct");
-    decrypt(src_file_name,dest_file_name, &my_key,chunk_size);
-    Ok("Done".to_string())
+	let result = match decrypt(src_file_name,dest_file_name, &my_key,chunk_size) {
+        Ok(_) => Ok("Decryption successful".to_string()),
+        Err(e) => Err(e),
+    };
+    // decrypt(src_file_name,dest_file_name, &my_key,chunk_size);
+    // Ok("Done".to_string())
+	result
 }
 
 pub fn init<R: Runtime>() -> TauriPlugin<R> {
