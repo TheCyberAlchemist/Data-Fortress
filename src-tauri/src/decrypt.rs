@@ -1,72 +1,70 @@
-use std::{path::Path,io::{Read, Seek, SeekFrom,Write}};
+use std::{io::Write, fs::OpenOptions, path::Path};
 use crate::functions::*;
-use crypto_api_chachapoly::{XChaCha20};
-use rayon::prelude::*;
+
+use memmap2::Mmap;
 use tauri::{
     plugin::{Builder, TauriPlugin},
     AppHandle,Runtime
 };
 
-pub fn decrypt(file_name: &str,dest_file_name: &str,key: &[u8],chunk_size:usize)-> Result<String, String> {
-	let mut buf = Vec::new();
+use ring::aead::*;
+pub fn decrypt(src_file_name: &str,dest_file_name: &str, key: &[u8],_chunk_size:usize)-> Result<String, String>  {
+	// println!("[Decrypt] Decrypting file: {}", src_file_name);    
+	// let start_time = std::time::Instant::now();
+    let file = std::fs::File::open(src_file_name).unwrap();
+    let mut buf = unsafe { Mmap::map(&file).unwrap().to_vec()  };
+	// println!("[Decrypt] Time taken for reading file: {}s", start_time.elapsed().as_secs());
 
-	let mut file = std::fs::File::open(file_name).unwrap();
+	// let start_time = std::time::Instant::now();
+	
+	let key = LessSafeKey::new(UnboundKey::new(&AES_256_GCM, &key).unwrap());
+	let nonce_arr: [u8; 12] = buf[buf.len() - 12..buf.len()].try_into().unwrap();
+	buf.truncate(buf.len() - 12);
+	let nonce = Nonce::assume_unique_for_key(nonce_arr);
 
-	// read the whole file into buff
-	file.read_to_end(&mut buf).unwrap();
+	match key.open_in_place(nonce, Aad::empty(), &mut buf) {
+		Ok(_) => {},
+		Err(e) => {
+			println!("[Decrypt] Error decrypting file : {}", e );
+			return Err("[Decrypt] Error decrypting file".to_string());
+		}
+	}
+	buf.truncate(buf.len() - AES_256_GCM.tag_len());
+	
+	// println!("[Decrypt] Time taken for decrypting file: {}s", start_time.elapsed().as_secs());
 
-	// retrive the hash from the end of the file
-	let _hash = buf.split_off(buf.len() - 32);
+	// let start_time = std::time::Instant::now();
 
-	// retrive and remove the nonce from the end of the file
-	let nonce = buf.split_off(buf.len() - 24);
-
-    buf.par_chunks_mut(chunk_size)
-        .for_each(|chunk| {
-			// clone the cipher
-            let cipher = XChaCha20::cipher();
-            let chunk_size = chunk.len();
-            cipher.decrypt(chunk, chunk_size, key, &nonce).unwrap();
-        });
 	std::fs::create_dir_all(Path::new(dest_file_name).parent().unwrap()).unwrap();
 
-	let mut dist_file = match std::fs::OpenOptions::new().write(true).create(true).open(dest_file_name) {
-		Ok(file) => file,
-		Err(e) => panic!("Failed to create file {}: {}", dest_file_name, e),
-	};
-	dist_file.write_all(&buf).unwrap();
+	let mut file = OpenOptions::new().read(true).write(true).create(true).open(dest_file_name).unwrap();
 
-	Ok("Decryption successful".to_string())
+	file.write_all(&buf).unwrap();
 
+	// println!("[Decrypt] Time taken for writing file: {}s", start_time.elapsed().as_secs());
+	Ok("".to_string())
 }
 
 #[tauri::command]
 pub async fn decrypt_file<R: Runtime>(src_file_name: &str,dest_file_name: &str, password: &str,chunk_size:usize,_app: AppHandle<R>) -> Result<String, String>  {
+	let start_time = std::time::Instant::now();
     let my_key = get_key(password);
 	// println!("Here at decrypt_file: {:?}",src_file_name);
-	let mut buf = Vec::new();
+	// let mut buf = Vec::new();
 	
-	let mut file = std::fs::File::open(src_file_name).unwrap();
+	// let mut file = std::fs::File::open(src_file_name).unwrap();
 	
 	// read the last 32 + 24 bytes of the file
-	file.seek(SeekFrom::End(-(32+24) as i64)).unwrap();
-	file.read_to_end(&mut buf).unwrap();
-	
-	let hash = buf.split_off(buf.len() - 32);
-	
-	let nonce = buf.split_off(buf.len() - 24);	
+	// file.seek(SeekFrom::End(-(32+24) as i64)).unwrap();
+	// file.read_to_end(&mut buf).unwrap();
 
-	if hash != get_key_nonce_hash(&password, &nonce) {
-		println!("Password is not correct");
-		return Err("Password is not correct".to_string())
-	}
-	println!("Password is correct");
+	// println!("Password is correct");
+	
 	let result = match decrypt(src_file_name,dest_file_name, &my_key,chunk_size) {
         Ok(_) => Ok("Decryption successful".to_string()),
         Err(e) => Err(e),
     };
-    // decrypt(src_file_name,dest_file_name, &my_key,chunk_size);
-    // Ok("Done".to_string())
+    println!("[Decrypt] Time elapsed for file {} : {:?}",src_file_name , start_time.elapsed());
 	result
 }
 
