@@ -1,0 +1,98 @@
+<h2>Key: {{key}}</h2>
+<!-- radio button to switch the current_state -->
+<input type="radio" name="state" value="encrypt" (click)="current_state='encrypt'">Encrypt
+<input type="radio" name="state" value="decrypt" (click)="current_state='decrypt'">Decrypt
+
+<!-- show this div if current_state="encrypt" -->
+<div id="encrypt_div" [hidden]="current_state!='encrypt'">
+  <h1>Encryption</h1>
+  <h2> Selected Files</h2>
+  <button (click)="select_files_to_encrypt()">
+    Select files
+  </button>
+  <ul>
+    <li *ngFor="let file of encryption_selected_files">
+      {{file}}
+    </li>
+  </ul>
+  <h2> Selected Folder</h2>
+  <button (click)="select_folder_to_encrypt()">
+    Select Folder
+  </button>
+  <h4>{{encryption_selected_folder}}</h4>
+  <ng-template #ul_li let-obj>
+    <ul>
+      <li *ngFor="let file of obj">
+        {{file.name}}
+        <ng-template 
+          [ngTemplateOutlet]="ul_li" 
+          [ngTemplateOutletContext]="{ 
+            $implicit: file.children 
+          }" *ngIf="file.children">
+        </ng-template>
+      </li>
+    </ul>
+  </ng-template>
+
+  <ng-template 
+    [ngTemplateOutlet]="ul_li" 
+    [ngTemplateOutletContext]="{ 
+      $implicit: encrypt_dir_obj 
+    }" *ngIf="encrypt_dir_obj.length!=0">
+  </ng-template>
+  <h2>Destination Encryption path</h2>
+  <button (click)="select_encryption_destination_folder()">
+    Select destination folder
+  </button>
+  <h4>{{encryption_destination_folder}}</h4>
+
+  <button (click)="encrypt_all()">
+    Encrypt
+  </button>
+  <ul>
+    <li *ngFor="let error of encrypt_errors">
+      {{error}}
+    </li>
+  </ul>
+  <!-- success message -->
+  <h3 id="success_message" [hidden]="!encryption_success"> Success ✅</h3>
+</div>
+<div class="decrypt_div" [hidden]="current_state!='decrypt'">
+  <h1>Decryption</h1>
+  <h2> Selected Files</h2>
+  <button (click)="select_files_to_decrypt()">
+    Select files
+  </button>
+  <ul>
+    <li *ngFor="let file of decryption_selected_files">
+      {{file}}
+    </li>
+  </ul>
+  <h2> Selected Folder</h2>
+    <button (click)="select_folder_to_decrypt()">
+      Select Folder
+    </button>
+  <h4>{{decryption_selected_folder}}</h4>
+  <ng-template 
+    [ngTemplateOutlet]="ul_li" 
+    [ngTemplateOutletContext]="{ 
+      $implicit: decrypt_dir_obj 
+    }" *ngIf="decrypt_dir_obj.length!=0">
+  </ng-template>
+  <h2>Destination Decryption path</h2>
+  <button (click)="select_decryption_destination_folder()">
+    Select destination folder
+  </button>
+  <h3>{{decryption_destination_folder}}</h3>
+  
+  <div id="decrypt_success" [hidden]="!decryption_success">Success ✅</div>
+  <button (click)="decrypt_all()">
+    Decrypt
+  </button>
+  <ul>
+    <li *ngFor="let error of decrypt_errors">
+      {{error}}
+    </li>
+  </ul>
+</div>
+

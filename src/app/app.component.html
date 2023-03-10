@@ -1,98 +1,135 @@
-<h2>Key: {{key}}</h2>
-<!-- radio button to switch the current_state -->
-<input type="radio" name="state" value="encrypt" (click)="current_state='encrypt'">Encrypt
-<input type="radio" name="state" value="decrypt" (click)="current_state='decrypt'">Decrypt
+<div class="flex mt-[4.7rem] md:mt-0 dark">
+    <!-- BEGIN: Side Menu -->
+    <app-sidebar></app-sidebar>
+    <!-- END: Side Menu -->
+    <div class="content">
+        <!-- BEGIN: Top Bar -->
+        <app-topbar></app-topbar>
+        <!-- END: Top Bar -->
 
-<!-- show this div if current_state="encrypt" -->
-<div id="encrypt_div" [hidden]="current_state!='encrypt'">
-  <h1>Encryption</h1>
-  <h2> Selected Files</h2>
-  <button (click)="select_files_to_encrypt()">
-    Select files
-  </button>
-  <ul>
-    <li *ngFor="let file of encryption_selected_files">
-      {{file}}
-    </li>
-  </ul>
-  <h2> Selected Folder</h2>
-  <button (click)="select_folder_to_encrypt()">
-    Select Folder
-  </button>
-  <h4>{{encryption_selected_folder}}</h4>
-  <ng-template #ul_li let-obj>
-    <ul>
-      <li *ngFor="let file of obj">
-        {{file.name}}
-        <ng-template 
-          [ngTemplateOutlet]="ul_li" 
-          [ngTemplateOutletContext]="{ 
-            $implicit: file.children 
-          }" *ngIf="file.children">
-        </ng-template>
-      </li>
-    </ul>
-  </ng-template>
+        <div class="grid grid-cols-12 gap-6 mt-8">
 
-  <ng-template 
-    [ngTemplateOutlet]="ul_li" 
-    [ngTemplateOutletContext]="{ 
-      $implicit: encrypt_dir_obj 
-    }" *ngIf="encrypt_dir_obj.length!=0">
-  </ng-template>
-  <h2>Destination Encryption path</h2>
-  <button (click)="select_encryption_destination_folder()">
-    Select destination folder
-  </button>
-  <h4>{{encryption_destination_folder}}</h4>
+            <div class="col-span-12 lg:col-span-12 2xl:col-span-12">
+                <h2 class="intro-y text-lg font-medium mr-auto mt-2">File Manager</h2>
+                <!-- BEGIN: Add File Button -->
+                <div class="intro-y flex flex-col-reverse sm:flex-row items-center">
+                    <div class="w-full sm:w-auto relative mr-auto mt-3 sm:mt-0">
 
-  <button (click)="encrypt_all()">
-    Encrypt
-  </button>
-  <ul>
-    <li *ngFor="let error of encrypt_errors">
-      {{error}}
-    </li>
-  </ul>
-  <!-- success message -->
-  <h3 id="success_message" [hidden]="!encryption_success"> Success ✅</h3>
+                    </div>
+                    <div class="w-full sm:w-auto flex">
+                        <button class="btn btn-primary shadow-md mr-2" (click)="select_files_to_encrypt()">Select
+                            Files</button>
+                        <button class="btn btn-primary shadow-md mr-2" (click)="select_folder_to_encrypt()">Select
+                            Folder</button>
+                    </div>
+                </div>
+                <!-- END: Add File Button -->
+
+                <!-- BEGIN: Files -->
+                <div class="intro-y grid grid-cols-12 gap-3 sm:gap-6 mt-5">
+                    <ng-container *ngFor="let file of encryption_selected_files">
+
+                        <div class="intro-y col-span-6 sm:col-span-4 md:col-span-3 2xl:col-span-2">
+                            <div class="file box rounded-md px-5 pt-8 pb-5 px-3 sm:px-5 relative zoom-in">
+                                <!-- <div class="absolute left-0 top-0 mt-3 ml-3">
+                                    <input class="form-check-input border border-slate-500" type="checkbox" checked>
+                                </div> -->
+                                <a class="w-3/5 file__icon file__icon--file mx-auto">
+                                    <div class="file__icon__file-name">TXT</div>
+                                </a>
+                                <a class="block font-medium mt-4 text-center truncate" title="{{file}}">{{file}}</a>
+                                <div class="text-slate-500 text-xs text-center mt-0.5">2.2 MB</div>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+                <!-- END: Files -->
+                <!-- start: Folder -->
+                <h3 class="mt-4"> Folder </h3>
+                <!-- #region Folder Old -->
+                <!-- <ng-template #ul_li let-obj>
+                    <div class="intro-y grid grid-cols-12 gap-3 sm:gap-6 mt-5">
+                        <ng-container *ngFor="let file of obj">
+                            <div class="intro-y col-span-6 sm:col-span-4 md:col-span-3 2xl:col-span-2">
+                                <div class="file box rounded-md px-5 pt-8 pb-5 px-3 sm:px-5 relative zoom-in">
+                                    <a class="w-3/5 file__icon file__icon--file mx-auto">
+                                        <div class="file__icon__file-name">TXT</div>
+                                    </a>
+                                    <a class="block font-medium mt-4 text-center truncate">{{file.name}}</a>
+                                    <div class="text-slate-500 text-xs text-center mt-0.5">112 GB</div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-template> -->
+                <!-- #endregion -->
+
+
+                <!-- #region Folder New-->
+                <div class="intro-y grid grid-cols-12 gap-3 sm:gap-6 mt-5">
+
+                    <div class="intro-y col-span-6 sm:col-span-4 md:col-span-3 2xl:col-span-2">
+                        <div class="file box rounded-md px-5 pt-8 pb-5 px-3 sm:px-5 relative zoom-in">
+                            <a class="w-3/5 file__icon file__icon--directory mx-auto">
+                                <!-- <div class="file__icon__file-name">TXT</div> -->
+                            </a>
+                            <a class="block font-medium mt-4 text-center truncate">Hello.txt</a>
+                            <div class="text-slate-500 text-xs text-center mt-0.5">112 GB</div>
+                        </div>
+                    </div>
+                    <div class="intro-y col-span-6 sm:col-span-8 md:col-span-9 2xl:col-span-10">
+                        <ng-template #ul_li let-obj>
+                            <ul
+                                class="text-base font-medium text-gray-900 bg-dark border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 ">
+                                <li class="w-full px-5 py-2 border-b border-gray-200 rounded-t-lg dark:border-gray-600"
+                                    *ngFor="let file of obj">
+                                    <!-- <a class="w-3/5 file__icon mx-auto"
+                                        [ngClass]="{'file__icon--file': file.children ==undefined, 'file__icon--directory':file.children!=undefined }"></a> -->
+                                        <ng-container *ngIf="file.children; else elseBlock">
+                                            <i class="fa-solid fa-folder"></i> &nbsp;&nbsp; {{file.name}}
+                                        </ng-container>
+                                        <ng-template #elseBlock>
+                                            <i class="fa-solid fa-file"></i> &nbsp;&nbsp; {{file.name}}
+                                        </ng-template>
+                                    <ng-template [ngTemplateOutlet]="ul_li" [ngTemplateOutletContext]="{ 
+                                    $implicit: file.children 
+                                  }" *ngIf="file.children">
+                                    </ng-template>
+                                </li>
+                            </ul>
+                        </ng-template>
+                        <!-- <ul
+                            class="text-sm font-medium text-gray-900 bg-dark border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            <li class="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                                Profile
+                            </li>
+                            <li class="w-full px-4 py-2 border-b border-gray-200 dark:border-gray-600">Settings</li>
+                            <li class="w-full px-4 py-2 border-b border-gray-200 dark:border-gray-600">Messages</li>
+                            <li class="w-full px-4 py-2 border-b border-gray-200 dark:border-gray-600">Settings</li>
+                            <li class="w-full px-4 py-2 border-b border-gray-200 dark:border-gray-600">Messages</li>
+                            <li class="w-full px-4 py-2 border-b border-gray-200 dark:border-gray-600">Settings</li>
+                            <li class="w-full px-4 py-2 border-b border-gray-200 dark:border-gray-600">Messages</li>
+                            <li class="w-full px-4 py-2 border-b border-gray-200 dark:border-gray-600">Settings</li>
+                            <li class="w-full px-4 py-2 border-b border-gray-200 dark:border-gray-600">Messages</li>
+                            <li class="w-full px-4 py-2 border-b border-gray-200 dark:border-gray-600">Settings</li>
+                            <li class="w-full px-4 py-2 border-b border-gray-200 dark:border-gray-600">Messages</li>
+                            <li class="w-full px-4 py-2 border-b border-gray-200 dark:border-gray-600">Settings</li>
+                            <li class="w-full px-4 py-2 border-b border-gray-200 dark:border-gray-600">Messages</li>
+                            <li class="w-full px-4 py-2 border-b border-gray-200 dark:border-gray-600">Settings</li>
+                            <li class="w-full px-4 py-2 border-b border-gray-200 dark:border-gray-600">Messages</li>
+                            <li class="w-full px-4 py-2 rounded-b-lg">Download</li>
+                        </ul> -->
+                        <ng-template 
+                        *ngIf="encrypt_dir_obj.length!=0" 
+                        [ngTemplateOutlet]="ul_li" 
+                        [ngTemplateOutletContext]="{ $implicit: encrypt_dir_obj}" >
+                        </ng-template>
+                    </div>
+                </div>
+                <!-- #endregion -->
+
+                <!-- END: Folder -->
+            </div>
+        </div>
+    </div>
 </div>
-<div class="decrypt_div" [hidden]="current_state!='decrypt'">
-  <h1>Decryption</h1>
-  <h2> Selected Files</h2>
-  <button (click)="select_files_to_decrypt()">
-    Select files
-  </button>
-  <ul>
-    <li *ngFor="let file of decryption_selected_files">
-      {{file}}
-    </li>
-  </ul>
-  <h2> Selected Folder</h2>
-    <button (click)="select_folder_to_decrypt()">
-      Select Folder
-    </button>
-  <h4>{{decryption_selected_folder}}</h4>
-  <ng-template 
-    [ngTemplateOutlet]="ul_li" 
-    [ngTemplateOutletContext]="{ 
-      $implicit: decrypt_dir_obj 
-    }" *ngIf="decrypt_dir_obj.length!=0">
-  </ng-template>
-  <h2>Destination Decryption path</h2>
-  <button (click)="select_decryption_destination_folder()">
-    Select destination folder
-  </button>
-  <h3>{{decryption_destination_folder}}</h3>
-  
-  <div id="decrypt_success" [hidden]="!decryption_success">Success ✅</div>
-  <button (click)="decrypt_all()">
-    Decrypt
-  </button>
-  <ul>
-    <li *ngFor="let error of decrypt_errors">
-      {{error}}
-    </li>
-  </ul>
-</div>
-

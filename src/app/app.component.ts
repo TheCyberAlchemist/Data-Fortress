@@ -6,7 +6,7 @@ import { readDir } from '@tauri-apps/api/fs';
 interface DirObj {
   path: string;
   children: DirObj[];
-
+  name: string;
 }
 
 @Component({
