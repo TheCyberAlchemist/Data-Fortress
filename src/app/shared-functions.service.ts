@@ -6,6 +6,8 @@ export interface DirObj {
 	name: string;
 	children: DirObj[];
 	size_in_kb?: number;
+	encrypted?: boolean;
+	decrypted?: boolean;
 }
 
 export interface FileObj {
