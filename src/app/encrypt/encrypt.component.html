@@ -1,0 +1,77 @@
+<div class="grid grid-cols-12 gap-6 mt-8">
+    <div class="col-span-12 lg:col-span-12 2xl:col-span-12">
+        <h2 class="intro-y text-lg font-medium mr-auto mt-2">File Manager</h2>
+        <!-- BEGIN: Add File Button -->
+        <div class="intro-y flex flex-col-reverse sm:flex-row items-center">
+            <div class="w-full sm:w-auto relative mr-auto mt-3 sm:mt-0">
+
+            </div>
+            <div class="w-full sm:w-auto flex">
+                <button class="btn btn-primary shadow-md mr-2" (click)="select_files_to_encrypt()">Select
+                    Files</button>
+                <button class="btn btn-primary shadow-md mr-2" (click)="select_folder_to_encrypt()">Select
+                    Folder</button>
+            </div>
+        </div>
+
+        <!-- #region Files -->
+        <div class="intro-y grid grid-cols-12 gap-3 sm:gap-6 mt-5" id="files" *ngIf="FILE_SELECTION_ENABLED">
+            <ng-container *ngFor="let file of encryption_selected_files">
+
+                <div class="intro-y col-span-6 sm:col-span-4 md:col-span-3 2xl:col-span-2">
+                    <div class="file box rounded-md px-5 pt-8 pb-5 px-3 sm:px-5 relative zoom-in" [ngClass]="{'box-success' : file.encrypted}">
+                        <div class="absolute left-0 top-0 mt-3 ml-3" *ngIf="file.encrypted">
+                            <!-- <input class="form-check-input border border-slate-500" type="checkbox" checked> -->
+                            ✅
+                        </div>
+                        <a class="w-3/5 file__icon file__icon--file mx-auto">
+                            <div class="file__icon__file-name">{{file.extension}}</div>
+                        </a>
+                        <a class="block font-medium mt-4 text-center truncate" title="{{file.path}}">{{file.name}}</a>
+                        <div class="text-slate-500 text-xs text-center mt-0.5">{{file.size_in_kb | number:'.2' }} KB</div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+        <!-- #endregion -->
+
+
+
+
+        <!-- #region Folder-->
+        <div class="intro-y grid grid-cols-12 gap-3 sm:gap-6 mt-5" *ngIf="!FILE_SELECTION_ENABLED">
+            <div class="intro-y col-span-6 sm:col-span-8 md:col-span-9 2xl:col-span-10">
+                <ng-template #ul_li let-obj>
+                    <ul
+                        class="text-base font-medium text-gray-900 bg-dark border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 ">
+                        <li class="w-full px-5 py-2 border-b border-gray-200 rounded-t-lg dark:border-gray-600"
+                            *ngFor="let file of obj">
+                            <!-- <a class="w-3/5 file__icon mx-auto"
+                                [ngClass]="{'file__icon--file': file.children ==undefined, 'file__icon--directory':file.children!=undefined }"></a> -->
+                            <ng-container *ngIf="file.children; else elseBlock">
+                                <i class="fa-solid fa-folder"></i> &nbsp;&nbsp; {{file.name}}
+                            </ng-container>
+                            <ng-template #elseBlock>
+                                <i class="fa-solid fa-file"></i> &nbsp;&nbsp; {{file.name}} ({{file.size_in_kb | number:'.2' }} KB)
+                            </ng-template>
+                            <ng-template [ngTemplateOutlet]="ul_li" [ngTemplateOutletContext]="{ 
+                            $implicit: file.children 
+                          }" *ngIf="file.children">
+                            </ng-template>
+                        </li>
+                    </ul>
+                </ng-template>
+                <ng-template *ngIf="encrypt_dir_obj.length!=0" [ngTemplateOutlet]="ul_li"
+                    [ngTemplateOutletContext]="{ $implicit: encrypt_dir_obj}">
+                </ng-template>
+            </div>
+        </div>
+        <!-- #endregion -->
+        <h2>Destination Encryption path</h2>
+        <button class="btn btn-primary shadow-md mr-2" (click)="select_encryption_destination_folder()">
+          Select destination folder
+        </button>
+        <h4>{{encryption_destination_folder}}</h4>
+        <button class="btn btn-primary shadow-md mr-2" (click)="encrypt_all()">Encrypt All</button>
+    </div>
+</div>

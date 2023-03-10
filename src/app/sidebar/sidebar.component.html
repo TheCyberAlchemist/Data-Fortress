@@ -1,14 +1,12 @@
 <nav class="side-nav">
-    <a href="index.html" class="intro-x flex items-center pl-5 pt-4">
-        <img alt="Midone - HTML Admin Template" class="w-6" src="dist/images/logo.svg">
-        <span class="hidden xl:block text-white text-lg ml-3">
-            Logo
-        </span>
+    <a class="intro-x flex items-center pl-5 pt-4">
+        <!-- <img alt="Midone - HTML Admin Template" class="w-6" src="dist/images/logo.svg"> -->
+        <i class="fa-solid fa-ghost text-xl"></i>
     </a>
     <div class="side-nav__devider my-6"></div>
     <ul>
         <li>
-            <a href="javascript:;" class="side-menu side-menu--active">
+            <a [routerLink]="'/encrypt'" class="side-menu" routerLinkActive="side-menu--active">
                 <div class="side-menu__icon">
                     <i data-lucide="edit"></i>
                 </div>
@@ -21,7 +19,7 @@
             </a>
         </li>
         <li>
-            <a href="javascript:;" class="side-menu ">
+            <a [routerLink]="'/decrypt'" class="side-menu" routerLinkActive="side-menu--active">
                 <div class="side-menu__icon">
                     <i data-lucide="edit"></i>
                 </div>

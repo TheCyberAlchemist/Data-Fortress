@@ -6,13 +6,18 @@ import { AppComponent } from './app.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { FileFolderComponent } from './file-folder/file-folder.component';
 import { TopbarComponent } from './topbar/topbar.component';
+import { EncryptComponent } from './encrypt/encrypt.component';
+import { DecryptComponent } from './decrypt/decrypt.component';
+import { SharedFunctionsService } from './shared-functions.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     SidebarComponent,
     FileFolderComponent,
-    TopbarComponent
+    TopbarComponent,
+    EncryptComponent,
+    DecryptComponent
   ],
   imports: [
     BrowserModule,

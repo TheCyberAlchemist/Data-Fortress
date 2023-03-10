@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "AACA,AAAA,YAAY,CAAC;EACT,MAAM,EAAE,4BAA4B;CAEvC",
+    "sources": [
+        "encrypt.component.scss"
+    ],
+    "names": [],
+    "file": "encrypt.component.css"
+}
