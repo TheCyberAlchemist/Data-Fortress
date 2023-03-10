@@ -17,7 +17,7 @@
   </button>
   <ul>
     <li *ngFor="let file of encryption_selected_files">
-      {{file}}
+      {{file.path}} {{file.file_size_in_mb}} MB
     </li>
   </ul>
   <h2> Selected Folder</h2>
@@ -29,7 +29,7 @@
     <ul class="list-group">
       <li class="list-group-item" *ngFor="let file of obj">
         <i [ngClass]="{'file': file.children ==undefined, 'folder':file.children!=undefined }"></i>
-        {{file.name}}
+        {{file.name}} <span *ngIf="!file.children" > {{file.file_size_in_mb}} MB</span>
         <ng-template 
           [ngTemplateOutlet]="ul_li" 
           [ngTemplateOutletContext]="{ 
@@ -71,7 +71,7 @@
   </button>
   <ul>
     <li *ngFor="let file of decryption_selected_files">
-      {{file}}
+      {{file.path}} {{file.file_size_in_mb}} MB
     </li>
   </ul>
   <h2> Selected Folder</h2>

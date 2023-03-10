@@ -12,6 +12,7 @@ fn main() {
   tauri::Builder::default()
     .plugin(encrypt::init())
     .plugin(decrypt::init())
+    .plugin(functions::init())
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
