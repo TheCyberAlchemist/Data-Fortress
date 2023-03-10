@@ -5,8 +5,8 @@ import { readDir } from '@tauri-apps/api/fs';
 
 interface DirObj {
   path: string;
+  name: string;
   children: DirObj[];
-
 }
 
 @Component({
@@ -19,7 +19,9 @@ export class AppComponent {
   key: string = "asd";
   current_state: string = "";
   BASE_DIR: string = "D:\\Somewhere\\Tests\\Rust Encryptions\\try3";
-  
+  change_key(e:any){
+    this.key = e.target.value;
+  }
   open_folder_select_dialogue(defaultPath: string=this.BASE_DIR,title: string = "Select a folder" ) {
     return dialog.open({
       title: title,
@@ -132,7 +134,7 @@ export class AppComponent {
           srcFileName: file,
           destFileName: `${this.encryption_destination_folder}\\${this.get_relative_encrypted_file_path(file, this.encryption_selected_folder)}`,
           password: this.key,
-          chunkSize: 500,
+          chunkSize: 1028*32,
         }).then(
           (result: any) => {
             completed += 1;
@@ -153,7 +155,7 @@ export class AppComponent {
         srcFileName: file,
         destFileName: `${this.encryption_destination_folder}\\${this.get_relative_encrypted_file_path(file, this.encryption_selected_folder)}`,
         password: this.key,
-        chunkSize: 500,
+        chunkSize: 1028*32,
       }).then(
         (result: any) => {
           completed += 1;

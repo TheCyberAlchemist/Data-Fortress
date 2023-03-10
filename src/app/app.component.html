@@ -1,4 +1,9 @@
-<h2>Key: {{key}}</h2>
+<h2>Key: <input type="text" name="key" placeholder="Enter key" [value]="key" (change)="change_key($event)"></h2>
+
+<!-- input that changes the key variable -->
+
+
+<br>
 <!-- radio button to switch the current_state -->
 <input type="radio" name="state" value="encrypt" (click)="current_state='encrypt'">Encrypt
 <input type="radio" name="state" value="decrypt" (click)="current_state='decrypt'">Decrypt
@@ -21,8 +26,9 @@
   </button>
   <h4>{{encryption_selected_folder}}</h4>
   <ng-template #ul_li let-obj>
-    <ul>
-      <li *ngFor="let file of obj">
+    <ul class="list-group">
+      <li class="list-group-item" *ngFor="let file of obj">
+        <i [ngClass]="{'file': file.children ==undefined, 'folder':file.children!=undefined }"></i>
         {{file.name}}
         <ng-template 
           [ngTemplateOutlet]="ul_li" 

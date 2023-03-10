@@ -1,65 +1,55 @@
-use std::{path::{PathBuf,Path},io::{Read, Write}};
-// import all the functions from the functions.rs file
+use std::{io::Write, fs::OpenOptions, path::Path};
+use memmap2::Mmap;
 use crate::functions::*;
 use tauri::{
     plugin::{Builder, TauriPlugin},
     AppHandle,Runtime
 };
-use crypto_api_chachapoly::{XChaCha20};
-use rayon::prelude::*;
+use ring::aead::*;
 
-
-fn encrypt(src_file_name: &str,dest_file_name: &str, key: &[u8],chunk_size:usize,password: &str)-> Result<String, String>  {
-    // convert message to bytes
-    let mut buf = Vec::new();
+pub fn encrypt(src_file_name: &str,dest_file_name: &str, key: &[u8],_chunk_size:usize)-> Result<String, String>  {
+    println!("[Encrypt] [Mmap] Encrypting file: {}", src_file_name);    
+    // let start_time = std::time::Instant::now();
+    let file = std::fs::File::open(src_file_name).unwrap();
+    let mut buf = unsafe { Mmap::map(&file).unwrap().to_vec()  };
+	// println!("[Encrypt] Time taken for reading file: {}ms", start_time.elapsed().as_millis());
+    
+	// let start_time = std::time::Instant::now();
 	
-	let nonce = &generate_nonce();
-
-    let mut file = std::fs::File::open(src_file_name).unwrap();
-
-    file.read_to_end(&mut buf).unwrap();
-
-    buf.par_chunks_mut(chunk_size)
-        .for_each(|chunk| {
-			
-            let cipher = XChaCha20::cipher();
-            let chunk_size = chunk.len();
-            cipher.encrypt(chunk, chunk_size, key, nonce).unwrap();
-
-        });
-
+    let key = LessSafeKey::new(UnboundKey::new(&AES_256_GCM, &key).unwrap());
+	let nonce_arr = generate_nonce();
+	let nonce = Nonce::assume_unique_for_key(nonce_arr);
+	key.seal_in_place_append_tag(nonce, Aad::empty(), &mut buf)
+	.unwrap();
 	
-    // write the encrypted buffer to a file
+	// println!("[Encrypt] Time taken for encryption: {}ms", start_time.elapsed().as_millis());
     
     std::fs::create_dir_all(Path::new(dest_file_name).parent().unwrap()).unwrap();
+	
+    // let start_time = std::time::Instant::now();
     
-    let mut dist_file = match std::fs::OpenOptions::new().write(true).create(true).open(dest_file_name) {
-        Ok(file) => file,
-        Err(e) => panic!("Failed to create file {}: {}", dest_file_name, e),
-    };
-    dist_file.write_all(&buf).unwrap();
-
-    // append the nonce to the end of the file
-    // let mut dist_file = std::fs::OpenOptions::new().append(true).open(dest_file_name).unwrap(); 
-    dist_file.write_all(nonce).unwrap();
-    // println!("[Encrypt] nonce : {:?}", nonce);
+    buf.append(&mut nonce_arr.to_vec());
+    let mut file = OpenOptions::new().read(true).write(true).create(true).open(dest_file_name).unwrap();
     
-    let hash = get_key_nonce_hash(&password, nonce);
-    // let mut dist_file = std::fs::OpenOptions::new().append(true).open(dest_file_name).unwrap();
-    dist_file.write_all(&hash).unwrap();
-    // println!("[Encrypt] hash : {:?}", hash);
-    Ok("Encryption successful".to_string())
+    // // file write
+    file.write_all(&buf).unwrap();
+	// println!("[Encrypt] Time taken for writing file: {}ms", start_time.elapsed().as_millis());
+    Ok("".to_string())
 }
 
 #[tauri::command]
 pub async fn encrypt_file<R: Runtime>(src_file_name: &str,dest_file_name: &str, password: &str,chunk_size:usize,_app: AppHandle<R>) -> Result<String, String>  {
     let my_key = get_key(password);
-
-    let result = match encrypt(src_file_name,dest_file_name, &my_key,chunk_size,&password) {
-        Ok(_) => Ok("Encryption successful".to_string()),
-        Err(e) => Err(e),
+    
+    let start_time = std::time::Instant::now();
+    let _result = match encrypt(src_file_name,dest_file_name, &my_key,chunk_size) {
+        Ok(_) => Ok("".to_string()),
+        Err(e) => Err(e.to_string()),
     };
-    result
+    let end_time = std::time::Instant::now();
+    println!("[Encrypt] [Mmap] Time elapsed for file {} is: {:?}", src_file_name , end_time.duration_since(start_time));
+    
+    _result
 }
 
 pub fn init<R: Runtime>() -> TauriPlugin<R> {
