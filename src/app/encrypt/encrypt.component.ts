@@ -3,6 +3,9 @@ import {invoke } from '@tauri-apps/api';
 import { readDir } from '@tauri-apps/api/fs';
 import { DirObj, FileObj, SharedFunctionsService } from '../shared-functions.service';
 
+import { join,basename,sep } from '@tauri-apps/api/path';
+
+
 @Component({
 	selector: 'app-encrypt',
 	templateUrl: './encrypt.component.html',
@@ -24,29 +27,22 @@ export class EncryptComponent implements OnInit {
 	encryption_success: boolean = false;
 	encrypt_errors: string[] = [];
 
-	get_relative_encrypted_file_path(file_name: string, src_folder: string = "") {
-		// remove the src_folder's ancesters from the file_name
-		// eg. src_folder = D:\Somewhere\src
-		// file_name = D:\Somewhere\src\folder1\folder2\file.txt
-		// relative_path = src\folder1\folder2\file.txt.encrypted
-		// keep the src_folder's name in the relative path
-		// console.log("file_name :: ", file_name);
-		// console.log("src_folder :: ", src_folder);
-
+	async get_relative_encrypted_file_path(file: FileObj, src_folder: string = "") {
+		// gets the file obj and the selected folder for encryption
+		// returns the relative path of the file from the selected folder
 		if (src_folder == "") {
-			// if file is selected directly
-
-			// remove all folder ref from the file_name
-			let relative_path = file_name.split("\\").pop();
-
-			return `${relative_path}.encrypted`;
+			return `${file.name}.encrypted`;
 		}
-		let relative_path = file_name.replace(src_folder, "");
-		// change the slashes to backslashes
-		relative_path = relative_path.replace(/\//g, "\\");
-		relative_path = relative_path.substring(1);
-		let selected_folder_name = src_folder.split("\\").pop();
-		relative_path = `${selected_folder_name}\\${relative_path}.encrypted`;
+		let my_seperator = sep ;
+		
+		let selected_folder_name = await basename(src_folder);
+
+		let parts = file.path.split(my_seperator);
+		parts = parts.slice(parts.indexOf(selected_folder_name));
+		parts[parts.length - 1] = `${parts[parts.length - 1]}.encrypted`;
+		
+		let relative_path = await join(...parts);
+
 		return relative_path;
 	}
 	select_encryption_destination_folder() {
@@ -58,9 +54,11 @@ export class EncryptComponent implements OnInit {
 		this.shared_functions.open_files_select_dialogue()
 			.then((result: any) => {
 				let all_files = result.map((file: any) => {
-					return { path: file };
+						return { path: file };
 				});
-				this.encryption_selected_files = this.shared_functions.set_file_properties_from_file_arr(all_files);
+				this.shared_functions.set_file_properties_from_file_arr(all_files).then((result: any) => {
+					this.encryption_selected_files = result;
+				})
 				this.FILE_SELECTION_ENABLED = true;
 				console.log(result);
 			}
@@ -76,16 +74,19 @@ export class EncryptComponent implements OnInit {
 
 			readDir(this.encryption_selected_folder, { recursive: true, }).then((result: any) => {
 				this.encrypt_dir_obj = result;
-				this.shared_functions.set_file_size_in_dir(this.encrypt_dir_obj);
-				// console.log(result);
+				// console.log("dir::",basename(this.encryption_selected_folder));
+				this.shared_functions.set_file_properties_for_dir_obj(this.encrypt_dir_obj);
 				this.encryption_selected_files = this.shared_functions.get_all_files_from_dir(result);
 			})
 		})
 	}
-	send_encryption_command(file: FileObj) {
+	async send_encryption_command(file: FileObj) {
+		let relative_path = await this.get_relative_encrypted_file_path(file, this.encryption_selected_folder);
+		let my_path = await join(this.encryption_destination_folder, relative_path);
+		console.log("Destination Path :: ", my_path);
 		invoke(`plugin:encrypt|encrypt_file`, {
 			srcFileName: file.path,
-			destFileName: `${this.encryption_destination_folder}\\${this.get_relative_encrypted_file_path(file.path, this.encryption_selected_folder)}`,
+			destFileName: my_path,
 			password: this.shared_functions.key,
 			chunkSize: 1028 * 32,
 		}).then(
@@ -99,18 +100,16 @@ export class EncryptComponent implements OnInit {
 	encrypt_dir(folder: DirObj[]) {
 		for (let file of folder) {
 			if (file.children != undefined) {
-				console.log("Command sent for folder :: ", file);
-				console.log("Destination :: ", `${this.encryption_destination_folder}\\${this.get_relative_encrypted_file_path(file.path, this.encryption_selected_folder)}`);
 				this.encrypt_dir(file.children);
 			}
 			else {
-				console.log("Command sent for file :: ", file);
-				console.log("Destination :: ", `${this.encryption_destination_folder}\\${this.get_relative_encrypted_file_path(file.path, this.encryption_selected_folder)}`);
+				// console.log("Command sent for file :: ", file);
+				// console.log("Destination :: ",);
 				this.send_encryption_command(file);
 			}
 		}
 	}
-	encrypt() {
+	async encrypt() {
 		let completed = 0;
 		if (this.encryption_selected_files.length == 0) {
 			this.encrypt_errors.push("No files selected");
@@ -125,8 +124,8 @@ export class EncryptComponent implements OnInit {
 		if (this.FILE_SELECTION_ENABLED) {
 			// if files are selected directly
 			for (let file of this.encryption_selected_files) {
-				console.log("Command sent for file :: ", file);
-				console.log("Destination :: ", `${this.encryption_destination_folder}\\${this.get_relative_encrypted_file_path(file.path)}`);
+				// console.log("Command sent for file :: ", file);
+				// console.log("Destination :: ", `${my_path}`);
 				this.send_encryption_command(file);
 			}
 			return;

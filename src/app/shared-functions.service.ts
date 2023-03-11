@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { dialog, invoke, fs } from '@tauri-apps/api';
 
+import { basename } from '@tauri-apps/api/path';
 export interface DirObj {
 	path: string;
 	name: string;
 	children: DirObj[];
 	size_in_kb?: number;
+	extension?: string;
 	encrypted?: boolean;
 	decrypted?: boolean;
 }
@@ -45,16 +47,13 @@ export class SharedFunctionsService {
 		})
 		// invoke the tauri api
 	}
-	set_file_properties_from_file_arr(files: FileObj[]) {
+	async set_file_properties_from_file_arr(files: FileObj[]) {
 		// setting the properties of the file like name, extension, size
 		for (let file of files) {
-			this.get_size_in_kb(file).then((size) => {
-				file.size_in_kb = size;
-				file.name = file.path.replace(/^.*[\\\/]/, '')
-				let ext = file.path.split(".").reverse()
-
-				file.extension = ext[0] != 'encrypted' ? ext[0] : ext[1]
-			});
+			file.size_in_kb = await this.get_size_in_kb(file);
+			file.name = await basename(file.path);
+			let ext = file.path.split(".").reverse()
+			file.extension = ext[0] != 'encrypted' ? ext[0] : ext[1]
 		}
 		return files;
 	}
@@ -67,17 +66,17 @@ export class SharedFunctionsService {
 				all_files.push({ path: file.path, name: file.name });
 			}
 		}
-		console.log(all_files);
 		return all_files;
 	}
-	set_file_size_in_dir(dir_obj: DirObj[]) {
+	async set_file_properties_for_dir_obj(dir_obj: DirObj[]) {
 		for (let file of dir_obj) {
 			if (file.children) {
-				this.set_file_size_in_dir(file.children);
+				this.set_file_properties_for_dir_obj(file.children);
 			} else {
-				this.get_size_in_kb(file).then((size) => {
-					file.size_in_kb = size;
-				});
+				file.size_in_kb = await this.get_size_in_kb(file);
+				file.name = await basename(file.path);
+				let ext = file.path.split(".").reverse()
+				file.extension = ext[0] != 'encrypted' ? ext[0] : ext[1]
 			}
 		}
 	}
@@ -85,7 +84,6 @@ export class SharedFunctionsService {
 		return invoke(`plugin:functions|get_file_size`, {
 			fileName: file.path,
 		}).then((size: any) => {
-			console.log(file.path, size);
 			let size_in_kb = size / 1024;
 			size_in_kb = Math.round(size_in_kb * 100) / 100;
 			return size_in_kb;
