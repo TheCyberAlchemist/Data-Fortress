@@ -6,7 +6,8 @@ import { DirObj, FileObj, SharedFunctionsService } from '../shared-functions.ser
 @Component({
 	selector: 'app-decrypt',
 	templateUrl: './decrypt.component.html',
-	styleUrls: ['./decrypt.component.scss']
+	styleUrls: ['./decrypt.component.scss'],
+	providers: [SharedFunctionsService]
 })
 export class DecryptComponent implements OnInit {
 
@@ -16,6 +17,7 @@ export class DecryptComponent implements OnInit {
 	}
 	decryption_selected_files: FileObj[] = [];
 	decryption_selected_folder: string = "";
+	FILE_SELECTION_ENABLED: boolean|undefined = undefined;
 	decryption_destination_folder: string = this.shared_functions.BASE_DIR + "\\Decrypt";
 	decrypt_dir_obj: DirObj[] = [];
 	decryption_success: boolean = false;
@@ -63,6 +65,7 @@ export class DecryptComponent implements OnInit {
 				let all_files: FileObj[] = result.map((file: any) => { return { path: file } });
 				console.log(all_files);
 				this.decryption_selected_files = this.shared_functions.set_file_properties_from_file_arr(all_files);
+				this.FILE_SELECTION_ENABLED = true;
 			}
 			).catch((err: any) => {
 				console.log(err);
@@ -71,6 +74,7 @@ export class DecryptComponent implements OnInit {
 	select_folder_to_decrypt() {
 		this.shared_functions.open_folder_select_dialogue(this.shared_functions.BASE_DIR + "\\Encrypt").then((result: any) => {
 			this.decryption_selected_folder = result;
+			this.FILE_SELECTION_ENABLED = false;
 			// console.log(this.getAllFiles(this.encryption_selected_folder,[]));
 			readDir(this.decryption_selected_folder, { recursive: true, }).then((entries: any) => {
 				// console.log(this.get_relative_encrypted_file_path(entries,this.encryption_selected_folder));

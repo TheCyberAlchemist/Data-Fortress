@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { dialog, invoke, fs } from '@tauri-apps/api';
+import { dialog, invoke} from '@tauri-apps/api';
 
 export interface DirObj {
 	path: string;
@@ -16,9 +16,7 @@ export interface FileObj {
 	encrypted?: boolean;
 	decrypted?: boolean;
 }
-@Injectable({
-	providedIn: 'root'
-})
+@Injectable()
 export class SharedFunctionsService {
 	title = 'tauri-encrypter';
 	key: string = "asd";

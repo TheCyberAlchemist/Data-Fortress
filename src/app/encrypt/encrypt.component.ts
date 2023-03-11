@@ -6,7 +6,8 @@ import { DirObj, FileObj, SharedFunctionsService } from '../shared-functions.ser
 @Component({
 	selector: 'app-encrypt',
 	templateUrl: './encrypt.component.html',
-	styleUrls: ['./encrypt.component.scss']
+	styleUrls: ['./encrypt.component.scss'],
+	providers: [SharedFunctionsService]
 })
 export class EncryptComponent implements OnInit {
 
