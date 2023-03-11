@@ -23,11 +23,28 @@ export class EncryptComponent implements OnInit {
 	encryption_selected_folder: string = "";
 	FILE_SELECTION_ENABLED: boolean|undefined = undefined;
 	encrypt_dir_obj: DirObj[] = [];
-	// encryption_destination_folder: string = "C:\\Users\\yogesh\\Desktop\\encrypted";
-	encryption_destination_folder: string = "D:\\Somewhere\\Tests\\Rust Encryptions\\try3\\Encrypt";
+
+	encryption_destination_folder: string = "";
 	encryption_success: boolean = false;
 	encrypt_errors: string[] = [];
 
+	progress_bar_value: number = 0;
+	total_files: number = 0;
+	completed_files: number = 0;
+
+	refresh_variables() {
+		this.encryption_selected_files = [];
+		this.encryption_selected_folder = "";
+		this.FILE_SELECTION_ENABLED = undefined;
+		this.encrypt_dir_obj = [];
+		this.encryption_destination_folder = this.shared_functions.BASE_DIR + "\\Encrypt";
+		this.encryption_success = false;
+		this.encrypt_errors = [];
+		this.progress_bar_value = 0;
+		this.total_files = 0;
+		this.completed_files = 0;
+	}
+	
 	async get_relative_encrypted_file_path(file: FileObj, src_folder: string = "") {
 		// gets the file obj and the selected folder for encryption
 		// returns the relative path of the file from the selected folder
@@ -51,9 +68,17 @@ export class EncryptComponent implements OnInit {
 			this.encryption_destination_folder = result;
 		})
 	}
+	encrypt_in_place() {
+		// set the destination folder to the selected folder
+		this.encryption_destination_folder = this.encryption_selected_folder;
+	}
 	select_files_to_encrypt() {
+		this.refresh_variables();
 		this.shared_functions.open_files_select_dialogue()
 			.then((result: any) => {
+				if (result.length == 0) {
+					return;
+				}
 				let all_files = result.map((file: any) => {
 						return { path: file };
 				});
@@ -68,7 +93,11 @@ export class EncryptComponent implements OnInit {
 			});
 	}
 	select_folder_to_encrypt() {
+		this.refresh_variables();
 		this.shared_functions.open_folder_select_dialogue(this.shared_functions.BASE_DIR).then((result: any) => {
+			if (result.length == 0) {
+				return;
+			}
 			this.encryption_selected_folder = result;
 			this.FILE_SELECTION_ENABLED = false;
 			// console.log(this.getAllFiles(this.encryption_selected_folder,[]));
@@ -93,10 +122,16 @@ export class EncryptComponent implements OnInit {
 		}).then(
 			(result: any) => {
 				file.encrypted = true;
-				console.log(file);
-				// a[0].name = `${a[0].name}.encrypted`;
+				this.completed_files += 1;
+				this.progress_bar_value = Math.round((this.completed_files / this.total_files) * 100);
 			}
-		)
+		).catch((err: any) => {
+			file.encryption_error = true;
+			this.encrypt_errors.push("Error encrypting file -> " + file.name);
+			this.total_files -= 1;
+			this.progress_bar_value = Math.round((this.completed_files / this.total_files) * 100);
+			console.log(err);
+		})
 	}
 	encrypt_dir(folder: DirObj[]) {
 		for (let file of folder) {
@@ -110,16 +145,22 @@ export class EncryptComponent implements OnInit {
 			}
 		}
 	}
-	async encrypt() {
-		let completed = 0;
+	check_errors() {
 		if (this.encryption_selected_files.length == 0) {
 			this.encrypt_errors.push("No files selected");
 			console.log("No files selected");
-			return;
+			return true;
 		}
 		if (this.encryption_destination_folder == "") {
 			this.encrypt_errors.push("No destination folder selected");
 			console.log("No destination folder selected");
+			return true;
+		}
+		return false;
+	}
+	async encrypt() {
+		this.total_files = this.encryption_selected_files.length;
+		if (this.check_errors()) {
 			return;
 		}
 		if (this.FILE_SELECTION_ENABLED) {
