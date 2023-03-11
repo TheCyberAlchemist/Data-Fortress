@@ -1,5 +1,8 @@
-
 .box-success {
     border: 2px solid #00b500 !important;
+    // border: 2px solid linear-gradient(to right top, #66cf4f, #73d644, #82dc37, #91e226, #a1e800);
     // box-shadow: 5px 5px #00b500!important;
+}
+.box-error {
+	border: 2px solid #ff0000 !important;
 }

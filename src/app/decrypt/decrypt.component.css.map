@@ -1,6 +1,6 @@
 {
     "version": 3,
-    "mappings": "",
+    "mappings": "AAAA,AAAA,YAAY,CAAC;EACT,MAAM,EAAE,4BAA4B;CAGvC;;AACD,AAAA,UAAU,CAAC;EACV,MAAM,EAAE,4BAA4B;CACpC",
     "sources": [
         "decrypt.component.scss"
     ],

@@ -328,7 +328,7 @@ Ensure the default browser behavior of the `hidden` attribute.
     -webkit-appearance: none;
        -moz-appearance: none;
             appearance: none;
-    background-color: #fff;
+    /* background-color: #fff; */
     border-color: #6b7280;
     border-width: 1px;
     border-radius: 0px;

@@ -2,10 +2,62 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+:root {
+  --primary: #1b253b;
+  --secondary: #232d45;
+}
+
 * {
   margin: 0;
   padding: 0;
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--secondary) var(--primary);
+}
+
+.intro h5, .intro p, .intro div {
+  -webkit-transform: translateY(50px);
+          transform: translateY(50px);
+  -webkit-animation: 0.4s intro-y-animation ease-in-out 0.33333s;
+          animation: 0.4s intro-y-animation ease-in-out 0.33333s;
+  -webkit-animation-fill-mode: forwards;
+          animation-fill-mode: forwards;
+  -webkit-animation-delay: calc(1 * 0.1s);
+          animation-delay: calc(1 * 0.1s);
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 15px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--primary);
+  border-radius: 5px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--secondary);
+  border-radius: 14px;
+  border: 3px solid var(--primary);
+}
+
+.folder_section > .intro-y.col-span-6 > ul {
+  overflow-y: auto;
+  height: 60vh;
+}
+
+.file_section {
+  overflow-y: auto;
+  height: 60vh;
+}
+
+.box-success {
+  border: 2px solid linear-gradient(to right top, #66cf4f, #73d644, #82dc37, #91e226, #a1e800);
 }
 /*# sourceMappingURL=styles.css.map */

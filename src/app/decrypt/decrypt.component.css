@@ -1,1 +1,8 @@
-/* No CSS *//*# sourceMappingURL=decrypt.component.css.map */
+.box-success {
+  border: 2px solid #00b500 !important;
+}
+
+.box-error {
+  border: 2px solid #ff0000 !important;
+}
+/*# sourceMappingURL=decrypt.component.css.map */
