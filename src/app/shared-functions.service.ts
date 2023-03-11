@@ -9,7 +9,9 @@ export interface DirObj {
 	size_in_kb?: number;
 	extension?: string;
 	encrypted?: boolean;
+	encryption_error?: boolean;
 	decrypted?: boolean;
+	decryption_error?: boolean;
 }
 
 export interface FileObj {
@@ -18,7 +20,9 @@ export interface FileObj {
 	size_in_kb?: number;
 	extension?: string;
 	encrypted?: boolean;
+	encryption_error?: boolean;
 	decrypted?: boolean;
+	decryption_error?: boolean;
 }
 @Injectable()
 export class SharedFunctionsService {
@@ -37,11 +41,15 @@ export class SharedFunctionsService {
 			directory: true,
 		})
 	}
-	open_files_select_dialogue(defaultPath: string = this.BASE_DIR, title: string = "Select files") {
+	open_files_select_dialogue(defaultPath: string = this.BASE_DIR,extensions: string[] = ["*"], title: string = "Select files") {
 		return dialog.open({
 			title: title,
 			defaultPath: defaultPath,
 			multiple: true,
+			filters: [{ 
+				name: "All Files", 
+				extensions: extensions 
+			}],
 		})
 		// invoke the tauri api
 	}

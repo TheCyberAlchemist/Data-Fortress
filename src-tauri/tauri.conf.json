@@ -22,7 +22,8 @@
         "save": false
       },
       "fs": {
-        "all": true
+        "all": true,
+        "scope": ["**"]
       },
       "path": {
         "all": true
