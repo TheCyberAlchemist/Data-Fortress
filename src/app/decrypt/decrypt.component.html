@@ -50,6 +50,7 @@
                             </ng-container>
                             <ng-template #elseBlock>
                                 <i class="fa-solid fa-file"></i> &nbsp;&nbsp; {{file.name}} ({{file.size_in_kb | number:'.2' }} KB)
+                                <span *ngIf="file.decrypted"> ✅</span>
                             </ng-template>
                             <ng-template [ngTemplateOutlet]="ul_li" [ngTemplateOutletContext]="{ 
                             $implicit: file.children 
@@ -69,6 +70,6 @@
           Select destination folder
         </button>
         <h4>{{decryption_destination_folder}}</h4>
-        <button class="btn btn-primary shadow-md mr-2" (click)="decrypt_all()">Decrypt All</button>
+        <button class="btn btn-primary shadow-md mr-2" (click)="decrypt()">Decrypt All</button>
     </div>
 </div>

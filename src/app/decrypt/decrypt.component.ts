@@ -26,7 +26,7 @@ export class DecryptComponent implements OnInit {
 	decrypt_errors: string[] = [];
 
 	async get_relative_decrypted_file_path(file: FileObj, src_folder: string = "") {
-		// console.log("file_name :: ", file_path);
+		console.log("file_name :: ", file);
 		// console.log("src_folder :: ", src_folder);
 
 		if (src_folder == "") {
@@ -38,7 +38,7 @@ export class DecryptComponent implements OnInit {
 
 		let parts = file.path.split(my_seperator);
 		parts = parts.slice(parts.indexOf(selected_folder_name));
-		parts[parts.length - 1] = `${parts[parts.length - 1]}.encrypted`;
+		parts[parts.length - 1] = parts[parts.length - 1].split(".encrypted")[0];
 		
 		let relative_path = await join(...parts);
 
