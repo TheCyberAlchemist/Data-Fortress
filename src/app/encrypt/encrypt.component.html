@@ -71,8 +71,8 @@
                                 <i class="fa-solid fa-folder"></i> &nbsp;&nbsp; {{file.name}}
                             </ng-container>
                             <ng-template #elseBlock>
-                                <i class="fa-solid fa-file"></i> &nbsp;&nbsp; {{file.name}} ({{file.size_in_kb |
-                                number:'.2' }} KB)
+                                <i class="fa-solid fa-file" [ngClass]="{'enc-success' : file.encrypted}" ></i> &nbsp;&nbsp; {{file.name}} ({{file.size_in_kb | number:'.2' }} KB) 
+                                <span *ngIf="file.encrypted">✅</span>
                             </ng-template>
                             <ng-template [ngTemplateOutlet]="ul_li" [ngTemplateOutletContext]="{ 
                             $implicit: file.children 
@@ -92,6 +92,6 @@
             Select destination folder
         </button>
         <h4>{{encryption_destination_folder}}</h4>
-        <button class="btn btn-primary shadow-md mr-2" (click)="encrypt_all()">Encrypt All</button>
+        <button class="btn btn-primary shadow-md mr-2" (click)="encrypt()">Encrypt All</button>
     </div>
 </div>

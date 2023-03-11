@@ -20,7 +20,8 @@ export class EncryptComponent implements OnInit {
 	encryption_selected_folder: string = "";
 	FILE_SELECTION_ENABLED: boolean|undefined = undefined;
 	encrypt_dir_obj: DirObj[] = [];
-	encryption_destination_folder: string = "C:\\Users\\yogesh\\Desktop\\encrypted";
+	// encryption_destination_folder: string = "C:\\Users\\yogesh\\Desktop\\encrypted";
+	encryption_destination_folder: string = "D:\\Somewhere\\Tests\\Rust Encryptions\\try3\\Encrypt";
 	encryption_success: boolean = false;
 	encrypt_errors: string[] = [];
 
@@ -82,7 +83,35 @@ export class EncryptComponent implements OnInit {
 			})
 		})
 	}
-	encrypt_all() {
+	send_encryption_command(file: FileObj) {
+		invoke(`plugin:encrypt|encrypt_file`, {
+			srcFileName: file.path,
+			destFileName: `${this.encryption_destination_folder}\\${this.get_relative_encrypted_file_path(file.path, this.encryption_selected_folder)}`,
+			password: this.shared_functions.key,
+			chunkSize: 1028 * 32,
+		}).then(
+			(result: any) => {
+				file.encrypted = true;
+				console.log(file);
+				// a[0].name = `${a[0].name}.encrypted`;
+			}
+		)
+	}
+	encrypt_dir(folder: DirObj[]) {
+		for (let file of folder) {
+			if (file.children != undefined) {
+				console.log("Command sent for folder :: ", file);
+				console.log("Destination :: ", `${this.encryption_destination_folder}\\${this.get_relative_encrypted_file_path(file.path, this.encryption_selected_folder)}`);
+				this.encrypt_dir(file.children);
+			}
+			else {
+				console.log("Command sent for file :: ", file);
+				console.log("Destination :: ", `${this.encryption_destination_folder}\\${this.get_relative_encrypted_file_path(file.path, this.encryption_selected_folder)}`);
+				this.send_encryption_command(file);
+			}
+		}
+	}
+	encrypt() {
 		let completed = 0;
 		if (this.encryption_selected_files.length == 0) {
 			this.encrypt_errors.push("No files selected");
@@ -94,47 +123,15 @@ export class EncryptComponent implements OnInit {
 			console.log("No destination folder selected");
 			return;
 		}
-		if (this.encrypt_dir_obj.length == 0) {
+		if (this.FILE_SELECTION_ENABLED) {
 			// if files are selected directly
 			for (let file of this.encryption_selected_files) {
 				console.log("Command sent for file :: ", file);
 				console.log("Destination :: ", `${this.encryption_destination_folder}\\${this.get_relative_encrypted_file_path(file.path)}`);
-				invoke(`plugin:encrypt|encrypt_file`, {
-					srcFileName: file.path,
-					destFileName: `${this.encryption_destination_folder}\\${this.get_relative_encrypted_file_path(file.path, this.encryption_selected_folder)}`,
-					password: this.shared_functions.key,
-					chunkSize: 1028 * 32,
-				}).then(
-					(result: any) => {
-						file.encrypted = true;
-						completed += 1;
-						console.log("Completed :: ", completed);
-						if (completed == this.encryption_selected_files.length) {
-							this.encryption_success = true;
-						}
-					}
-				)
+				this.send_encryption_command(file);
 			}
 			return;
 		}
-		// if directory is selected
-		for (let file of this.encryption_selected_files) {
-			console.log("Command sent for file :: ", file);
-			console.log("Destination :: ", `${this.encryption_destination_folder}\\${this.get_relative_encrypted_file_path(file.path, this.encryption_selected_folder)}`);
-			invoke(`plugin:encrypt|encrypt_file`, {
-				srcFileName: file,
-				destFileName: `${this.encryption_destination_folder}\\${this.get_relative_encrypted_file_path(file.path, this.encryption_selected_folder)}`,
-				password: this.shared_functions.key,
-				chunkSize: 1028 * 32,
-			}).then(
-				(result: any) => {
-					completed += 1;
-					console.log("Completed :: ", completed);
-					if (completed == this.encryption_selected_files.length) {
-						this.encryption_success = true;
-					}
-				}
-			)
-		}
+		this.encrypt_dir(this.encrypt_dir_obj);
 	}
 }
