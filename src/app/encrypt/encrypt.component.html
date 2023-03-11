@@ -1,6 +1,6 @@
 <div class="grid grid-cols-12 gap-6 mt-8">
     <div class="col-span-12 lg:col-span-12 2xl:col-span-12">
-        <h2 class="intro-y text-lg font-medium mr-auto mt-2">File Manager</h2>
+        <h2 class="intro-y text-lg font-medium mr-auto mt-2">Encrypt Files and Folders</h2>
         <!-- BEGIN: Add File Button -->
         <div class="intro-y flex flex-col-reverse sm:flex-row items-center">
             <div class="w-full sm:w-auto relative mr-auto mt-3 sm:mt-0">
@@ -14,12 +14,30 @@
             </div>
         </div>
 
+        <div class="bg-gradient-to-r from-purple-500 to-pink-500 mt-4 p-1 rounded-lg">
+            <div
+                class="w-full p-4 text-center bg-dark border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+                <h5 class="mb-2 pt-3 text-3xl font-bold text-gray-900 dark:text-white">Encrypt Files faster than ever!
+                    <i class="fa-solid fa-lock h-50 w-50"></i>
+                </h5>
+                <p class="text-xl font-semibold leading-normal text-gray-900 dark:text-white">The Al-powered
+                    app will help you improve yourself by analysing your everyday life.</p>
+
+
+                <div class="items-center justify-center space-y-4 sm:flex sm:space-y-0 sm:space-x-4">
+
+                </div>
+            </div>
+        </div>
+
+
         <!-- #region Files -->
         <div class="intro-y grid grid-cols-12 gap-3 sm:gap-6 mt-5" id="files" *ngIf="FILE_SELECTION_ENABLED">
             <ng-container *ngFor="let file of encryption_selected_files">
 
                 <div class="intro-y col-span-6 sm:col-span-4 md:col-span-3 2xl:col-span-2">
-                    <div class="file box rounded-md px-5 pt-8 pb-5 px-3 sm:px-5 relative zoom-in" [ngClass]="{'box-success' : file.encrypted}">
+                    <div class="file box rounded-md px-5 pt-8 pb-5 px-3 sm:px-5 relative zoom-in"
+                        [ngClass]="{'box-success' : file.encrypted}">
                         <div class="absolute left-0 top-0 mt-3 ml-3" *ngIf="file.encrypted">
                             <!-- <input class="form-check-input border border-slate-500" type="checkbox" checked> -->
                             ✅
@@ -28,7 +46,8 @@
                             <div class="file__icon__file-name">{{file.extension}}</div>
                         </a>
                         <a class="block font-medium mt-4 text-center truncate" title="{{file.path}}">{{file.name}}</a>
-                        <div class="text-slate-500 text-xs text-center mt-0.5">{{file.size_in_kb | number:'.2' }} KB</div>
+                        <div class="text-slate-500 text-xs text-center mt-0.5">{{file.size_in_kb | number:'.2' }} KB
+                        </div>
                     </div>
                 </div>
             </ng-container>
@@ -70,7 +89,7 @@
         <!-- #endregion -->
         <h2>Destination Encryption path</h2>
         <button class="btn btn-primary shadow-md mr-2" (click)="select_encryption_destination_folder()">
-          Select destination folder
+            Select destination folder
         </button>
         <h4>{{encryption_destination_folder}}</h4>
         <button class="btn btn-primary shadow-md mr-2" (click)="encrypt()">Encrypt All</button>
