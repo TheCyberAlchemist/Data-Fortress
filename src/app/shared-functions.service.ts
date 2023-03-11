@@ -30,6 +30,7 @@ export class SharedFunctionsService {
 	key: string = "asd";
 	current_state: string = "";
 	BASE_DIR: string = "D:\\Somewhere\\Tests\\Rust Encryptions\\try3";
+	// BASE_DIR: string = "C:\\Users\\yogesh\\Desktop";
 
 	change_key(e: any) {
 		this.key = e.target.value;
