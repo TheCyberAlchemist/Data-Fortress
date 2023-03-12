@@ -1,11 +1,11 @@
 [package]
-name = "app"
+name = "Data-Fortress"
 version = "0.1.0"
 description = "A Tauri App"
-authors = ["you"]
+authors = ["TheCyberAlchemist","Klorofaux"]
 license = ""
 repository = ""
-default-run = "app"
+default-run = "Data-Fortress"
 edition = "2021"
 rust-version = "1.59"
 

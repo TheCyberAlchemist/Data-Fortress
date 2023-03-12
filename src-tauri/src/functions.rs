@@ -1,3 +1,5 @@
+use std::{fs::{remove_file, OpenOptions}, io::{SeekFrom, Seek, Write}};
+
 use sha2::{Sha256, Digest};
 use rand::{Rng, thread_rng};
 use tauri::{
@@ -35,10 +37,55 @@ pub fn get_file_size<R: Runtime>(file_name: &str,_app: AppHandle<R>) -> Result<u
     Ok(file_size)
 }
 
+fn shred_file_asd(path: &str) -> std::io::Result<()> {
+    let mut file = OpenOptions::new()
+        .write(true)
+        .open(path)?;
+
+    let file_size = file.metadata()?.len();
+    let mut rng = rand::thread_rng();
+
+    // Overwrite the file with random data
+    const BUFFER_SIZE: usize = 1024;
+    let mut buffer = vec![0u8; BUFFER_SIZE];
+    for i in 0..(file_size / BUFFER_SIZE as u64) {
+        rng.fill(&mut buffer[..]);
+        file.seek(SeekFrom::Start(i * BUFFER_SIZE as u64))?;
+        file.write_all(&buffer)?;
+    }
+
+    // Overwrite the remaining bytes with a random byte
+    let remaining_bytes = (file_size % BUFFER_SIZE as u64) as usize;
+    if remaining_bytes > 0 {
+        rng.fill(&mut buffer[..remaining_bytes]);
+        file.seek(SeekFrom::Start(file_size - remaining_bytes as u64))?;
+        file.write_all(&buffer[..remaining_bytes])?;
+    }
+
+    // Truncate the file to its original size
+    file.set_len(file_size)?;
+
+    // Sync the changes to disk
+    file.sync_all()?;
+
+    Ok(())
+}
+#[tauri::command]
+pub fn shred_file<R: Runtime>(path: &str,_app: AppHandle<R>) -> Result<String,String> {
+    
+    match shred_file_asd(path) {
+        Ok(_) => println!("File Shredded"),
+        Err(e) => println!("Error: {}", e),
+    }
+    remove_file(path).unwrap();
+
+    Ok("File Shredded".to_string())
+}
 pub fn init<R: Runtime>() -> TauriPlugin<R> {
     Builder::new("functions")
     .invoke_handler(tauri::generate_handler![
-        get_file_size
+        get_file_size,
+        shred_file,
     ])
     .build()
 }

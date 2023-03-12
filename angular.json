@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "tauri-encrypter": {
+    "data-fortress": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -20,7 +20,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/tauri-encrypter",
+            "outputPath": "dist/data-fortress",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -75,10 +75,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "tauri-encrypter:build:production"
+              "browserTarget": "data-fortress:build:production"
             },
             "development": {
-              "browserTarget": "tauri-encrypter:build:development"
+              "browserTarget": "data-fortress:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -86,7 +86,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "tauri-encrypter:build"
+            "browserTarget": "data-fortress:build"
           }
         },
         "test": {

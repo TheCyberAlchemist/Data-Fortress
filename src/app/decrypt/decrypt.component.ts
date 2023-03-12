@@ -21,7 +21,7 @@ export class DecryptComponent implements OnInit {
 	decryption_selected_files: FileObj[] = [];
 	decryption_selected_folder: string = "";
 	FILE_SELECTION_ENABLED: boolean|undefined = undefined;
-	decryption_destination_folder: string = this.shared_functions.BASE_DIR + "\\Decrypt";
+	decryption_destination_folder: string = "";
 	decrypt_dir_obj: DirObj[] = [];
 	decryption_success: boolean = false;
 	decrypt_errors: string[] = [];
@@ -30,25 +30,47 @@ export class DecryptComponent implements OnInit {
 	total_files: number = 0;
 	completed_files: number = 0;
 
+	decrypt_in_place: boolean = false;
+
 	refresh_variables() {
 		this.decryption_selected_files = [];
 		this.decryption_selected_folder = "";
 		this.FILE_SELECTION_ENABLED = undefined;
 		this.decrypt_dir_obj = [];
-		this.decryption_destination_folder = "";
+		this.decryption_destination_folder = this.shared_functions.BASE_DIR + "\\Decrypt";
 		this.decryption_success = false;
 		this.decrypt_errors = [];
 		this.progress_bar_value = 0;
 		this.total_files = 0;
 		this.completed_files = 0;
+		this.decrypt_in_place = false;
 	}
-
+	async set_decrypt_in_place() {
+		// set the destination folder to the selected folder
+		// function removes the last element of the array
+		// in case of folder select name eg. "path_to_folder/Encrypt" -> "path_to_folder"
+		// in case of file select name eg. "path_to_folder/Encrypt/file.txt" -> "path_to_folder/Encrypt"
+		this.decrypt_in_place = true;
+		if(this.FILE_SELECTION_ENABLED == undefined){
+			this.decrypt_errors.push("Please select a folder or files to decrypt");
+			return;
+		}
+		let my_path_arr: string[] = [];
+		if (this.FILE_SELECTION_ENABLED) {
+			my_path_arr = this.decryption_selected_files[0].path.split(sep);
+		}else{
+			my_path_arr = this.decryption_selected_folder.split(sep);
+		}
+		
+		my_path_arr.pop();
+		this.decryption_destination_folder = my_path_arr.join(sep);
+	}
 	async get_relative_decrypted_file_path(file: FileObj, src_folder: string = "") {
 		console.log("file_name :: ", file);
 		// console.log("src_folder :: ", src_folder);
 
 		if (src_folder == "") {
-			return file.name.split(".encrypted")[0];
+			return file.name.split(".dfort")[0];
 		}
 		let my_seperator = sep ;
 
@@ -56,7 +78,7 @@ export class DecryptComponent implements OnInit {
 
 		let parts = file.path.split(my_seperator);
 		parts = parts.slice(parts.indexOf(selected_folder_name));
-		parts[parts.length - 1] = parts[parts.length - 1].split(".encrypted")[0];
+		parts[parts.length - 1] = parts[parts.length - 1].split(".dfort")[0];
 		
 		let relative_path = await join(...parts);
 
@@ -70,13 +92,19 @@ export class DecryptComponent implements OnInit {
 		})
 	}
 	select_files_to_decrypt() {
-		// console.log(this.get_relative_encrypted_file_path("D:\\Somewhere\\Tests\\Rust Encryptions\\try3\\Trial\\Dir_2\\Dir_1\\New Text Document.txt","D:\\Somewhere\\Tests\\Rust Encryptions\\try3\\Trial\\Dir_2"))
-		this.shared_functions.open_files_select_dialogue(this.shared_functions.BASE_DIR,['encrypted'])
+		this.refresh_variables();
+		this.shared_functions.open_files_select_dialogue(this.shared_functions.BASE_DIR, ["dfort"])
 			.then((result: any) => {
-				if (result.length == 0) {
+				if (result == null || result.length == 0) {
 					return;
 				}
-				// console.log(result);
+				result = result.filter((file: string) => {
+					return file.split(".").pop() == "dfort";
+				});
+				if (result.length == 0) {
+					this.decrypt_errors.push("Please select files with the .dfort extension");
+					return;
+				}
 				let all_files: FileObj[] = result.map((file: any) => { return { path: file } });
 				console.log(all_files);
 				this.shared_functions.set_file_properties_from_file_arr(all_files).then((result: any) => {
@@ -89,13 +117,14 @@ export class DecryptComponent implements OnInit {
 			});
 	}
 	select_folder_to_decrypt() {
+		this.refresh_variables();
 		function filter_entries(entries: DirObj[]) {
-			// function that filters out all the files that do not have the .encrypted extension recursively
+			// function that filters out all the files that do not have the .dfort extension recursively
 			let filtered_entries: DirObj[] = [];
 			for (let entry of entries) {
 				if (entry.children == undefined ) {
 					// if the entry is a file
-					if (entry.name.split(".").pop() == "encrypted") {
+					if (entry.name.split(".").pop() == "dfort") {
 						filtered_entries.push(entry);
 					}
 				} else {
@@ -134,7 +163,7 @@ export class DecryptComponent implements OnInit {
 			srcFileName: file.path,
 			destFileName: my_path,
 			password: this.shared_functions.key,
-			chunkSize: 1028 * 32,
+			decryptInPlace: this.decrypt_in_place,
 		}).then(
 			(result: any) => {
 				file.decrypted = true;

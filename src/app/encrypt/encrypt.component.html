@@ -1,7 +1,7 @@
 <div class="grid grid-cols-12 gap-6 mt-8">
     <div class="col-span-12 lg:col-span-12 2xl:col-span-12">
         <div class="flex">
-            <h2 class="intro-y text-lg font-medium mr-auto mt-2">Encrypt Files and Folders</h2>
+            <h2 class="intro-y text-lg font-medium mr-auto mt-2">Encrypt Files and Folders {{shared_functions.key}}</h2>
             <!-- BEGIN: Add File Button -->
             <div class="intro-y flex flex-col-reverse sm:flex-row items-center">
                 <div class="w-full sm:w-auto relative mr-auto mt-3 sm:mt-0">
@@ -23,9 +23,9 @@
                     Encrypt Files faster than ever! &nbsp;
                     <i class="fa-solid fa-lock h-50 w-50"></i>
                 </h5>
-                <p class="text-xl font-semibold leading-normal text-gray-900 dark:text-white">The Al-powered
-                    app will help you improve yourself by analysing your everyday life.</p>
-
+                <p class="text-xl font-semibold leading-normal text-gray-900 dark:text-white">
+                    This app uses AES-256 encryption to encrypt your files and folders to make them secure.
+                </p>
 
                 <div class="items-center justify-center space-y-4 sm:flex sm:space-y-0 sm:space-x-4">
 
@@ -110,16 +110,19 @@
             <button class="btn btn-primary shadow-md mr-2 mt-4" (click)="select_encryption_destination_folder()">
                 Select Destination Folder
             </button>
+            <button class="btn btn-primary shadow-md mr-2 mt-4" (click)="set_encrypt_in_place()">
+                Encrypt In Place
+            </button>
             <h4 class="inline border border-gray-900 rounded-lg dark:border-gray-900 p-3 h-100"><i class="fa-solid fa-folder"></i> &nbsp; 
                 <span class="mb-2 inline text-sm font-medium text-gray-900 dark:text-white">Destination Encryption path: </span>
                 {{encryption_destination_folder}}</h4>
-    
             <div class="block my-2">
                 <label for="helper-text" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Secret Key</label>
                 <div>
                     <input type="text" id="helper-text" aria-describedby="helper-text-explanation"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 inline w-75 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="s3creT">
+                        placeholder="s3creT" (keyup)="shared_functions.change_key($event)" 
+                        [value]="shared_functions.key">
                     <button class="btn btn-primary shadow-md ml-5" (click)="encrypt()">Encrypt All</button>
                 </div>
                 <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-400">

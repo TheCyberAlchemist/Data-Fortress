@@ -4,10 +4,10 @@
     "beforeBuildCommand": "npm run build",
     "beforeDevCommand": "",
     "devPath": "http://localhost:4200",
-    "distDir": "../dist/tauri-encrypter"
+    "distDir": "../dist/data-fortress"
   },
   "package": {
-    "productName": "tauri-encrypter",
+    "productName": "data-fortress",
     "version": "0.1.0"
   },
   "tauri": {
@@ -70,11 +70,9 @@
     },
     "windows": [
       {
-        "fullscreen": false,
-        "height": 600,
+        "maximized": true,
         "resizable": true,
-        "title": "Encrypter",
-        "width": 800
+        "title": "Encrypter"
       }
     ]
   }

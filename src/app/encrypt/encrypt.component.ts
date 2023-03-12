@@ -32,6 +32,29 @@ export class EncryptComponent implements OnInit {
 	total_files: number = 0;
 	completed_files: number = 0;
 
+	encrypt_in_place: boolean = false;
+
+	async set_encrypt_in_place() {
+		// set the destination folder to the selected folder
+		// function removes the last element of the array
+		// in case of folder select name eg. "path_to_folder/Encrypt" -> "path_to_folder"
+		// in case of file select name eg. "path_to_folder/Encrypt/file.txt" -> "path_to_folder/Encrypt"
+		this.encrypt_in_place = true;
+		if(this.FILE_SELECTION_ENABLED == undefined){
+			this.encrypt_errors.push("Please select a folder or files to encrypt");
+			return;
+		}
+		let my_path_arr: string[] = [];
+		if (this.FILE_SELECTION_ENABLED) {
+			my_path_arr = this.encryption_selected_files[0].path.split(sep);
+		}else{
+			my_path_arr = this.encryption_selected_folder.split(sep);
+		}
+		
+		my_path_arr.pop();
+		this.encryption_destination_folder = my_path_arr.join(sep);
+
+	}
 	refresh_variables() {
 		this.encryption_selected_files = [];
 		this.encryption_selected_folder = "";
@@ -43,13 +66,13 @@ export class EncryptComponent implements OnInit {
 		this.progress_bar_value = 0;
 		this.total_files = 0;
 		this.completed_files = 0;
+		this.encrypt_in_place = false;
 	}
-	
 	async get_relative_encrypted_file_path(file: FileObj, src_folder: string = "") {
 		// gets the file obj and the selected folder for encryption
 		// returns the relative path of the file from the selected folder
 		if (src_folder == "") {
-			return `${file.name}.encrypted`;
+			return `${file.name}.dfort`;
 		}
 		let my_seperator = sep ;
 		
@@ -57,7 +80,7 @@ export class EncryptComponent implements OnInit {
 
 		let parts = file.path.split(my_seperator);
 		parts = parts.slice(parts.indexOf(selected_folder_name));
-		parts[parts.length - 1] = `${parts[parts.length - 1]}.encrypted`;
+		parts[parts.length - 1] = `${parts[parts.length - 1]}.dfort`;
 		
 		let relative_path = await join(...parts);
 
@@ -67,10 +90,6 @@ export class EncryptComponent implements OnInit {
 		this.shared_functions.open_folder_select_dialogue(this.shared_functions.BASE_DIR).then((result: any) => {
 			this.encryption_destination_folder = result;
 		})
-	}
-	encrypt_in_place() {
-		// set the destination folder to the selected folder
-		this.encryption_destination_folder = this.encryption_selected_folder;
 	}
 	select_files_to_encrypt() {
 		this.refresh_variables();
@@ -118,7 +137,7 @@ export class EncryptComponent implements OnInit {
 			srcFileName: file.path,
 			destFileName: my_path,
 			password: this.shared_functions.key,
-			chunkSize: 1028 * 32,
+			encryptInPlace: this.encrypt_in_place
 		}).then(
 			(result: any) => {
 				file.encrypted = true;
@@ -139,8 +158,6 @@ export class EncryptComponent implements OnInit {
 				this.encrypt_dir(file.children);
 			}
 			else {
-				// console.log("Command sent for file :: ", file);
-				// console.log("Destination :: ",);
 				this.send_encryption_command(file);
 			}
 		}
