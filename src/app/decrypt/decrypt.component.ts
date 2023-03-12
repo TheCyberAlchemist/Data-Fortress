@@ -138,7 +138,7 @@ export class DecryptComponent implements OnInit {
 			return filtered_entries;
 		}
 		this.shared_functions.open_folder_select_dialogue(this.shared_functions.BASE_DIR + "\\Encrypt").then((result: any) => {
-			if (result.length == 0) {
+			if (result == null || result.length == 0) {
 				console.log("No folder selected");
 				return;
 			}
