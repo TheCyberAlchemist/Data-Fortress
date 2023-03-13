@@ -93,21 +93,28 @@ export class EncryptComponent implements OnInit {
 	select_encryption_destination_folder() {
 		this.shared_functions.open_folder_select_dialogue(this.shared_functions.BASE_DIR).then((result: any) => {
 			this.encrypt_in_place = false;
-			if( (result||{}).length<=0) {
-				this.encryption_destination_folder = result;
-				this.other_errors = this.other_errors.filter((err) => {err.type=="destination_path_error"})
+			console.log("before if::",result||[]);	
+			if((result||[]).length<=0) {
+				// console.log("no folder selected");
+
+				return;
 			}
+			console.log("After if",result);
+			this.encryption_destination_folder = result;
+			this.other_errors = this.other_errors.filter((err) => {err.type=="destination_path_error"})
 		})
 	}
 	select_files_to_encrypt() {
 		this.refresh_variables();
 		this.shared_functions.open_files_select_dialogue()
 			.then((result: any) => {
-				if ((result||{}).length == 0) {
+				if ((result||[]).length == 0) {
+					// no files selected
+					this.other_errors.push({ type: "file_selection_error", description: "Please select files to encrypt" });
 					return;
 				}
 				let all_files = result.map((file: any) => {
-						return { path: file };
+					return { path: file };
 				});
 				this.shared_functions.set_file_properties_from_file_arr(all_files).then((result: any) => {
 					this.encryption_selected_files = result;
@@ -122,7 +129,7 @@ export class EncryptComponent implements OnInit {
 	select_folder_to_encrypt() {
 		this.refresh_variables();
 		this.shared_functions.open_folder_select_dialogue(this.shared_functions.BASE_DIR).then((result: any) => {
-			if ((result||{}).length == 0) {
+			if ((result||[]).length == 0) {
 				return;
 			}
 			this.encryption_selected_folder = result;
@@ -137,6 +144,14 @@ export class EncryptComponent implements OnInit {
 			})
 		})
 	}
+	all_encryption_success() {
+		// function to be called when all files are encrypted successfully
+		console.log("All files encrypted successfully");
+		this.encryption_success = true;
+		this.other_errors = [];
+		this.encrypt_errors = [];
+	}
+
 	async send_encryption_command(file: FileObj) {
 		let relative_path = await this.get_relative_encrypted_file_path(file, this.encryption_selected_folder);
 		let my_path = await join(this.encryption_destination_folder, relative_path);
@@ -151,6 +166,9 @@ export class EncryptComponent implements OnInit {
 				file.encrypted = true;
 				this.completed_files += 1;
 				this.progress_bar_value = Math.round((this.completed_files / this.total_files) * 100);
+				if (this.completed_files == this.total_files && this.encrypt_errors.length == 0) {
+					this.all_encryption_success();
+				}
 			}
 		).catch((err: any) => {
 			file.encryption_error = true;
@@ -179,6 +197,11 @@ export class EncryptComponent implements OnInit {
 		if (this.encryption_destination_folder == "") {
 			this.other_errors.push({type: "destination_path_error",description: "No destination folder selected"});
 			console.log("No destination folder selected");
+			return true;
+		}
+		if (this.shared_functions.key == "") {
+			this.other_errors.push({type: "key_error",description: "No key entered"});
+			console.log("No key entered");
 			return true;
 		}
 		return false;

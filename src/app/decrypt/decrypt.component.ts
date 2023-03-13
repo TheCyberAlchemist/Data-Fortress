@@ -78,9 +78,6 @@ export class DecryptComponent implements OnInit {
 			return file.name.split(".dfort")[0];
 		}
 		let my_seperator = sep;
-		// console.log("my_seperator :: ", my_seperator);
-		// console.log("my_seperator :: ", src_folder);
-		// console.log("my_seperator :: ", src_folder.split(my_seperator));
 
 		let selected_folder_name = this.get_selected_folder_name(src_folder);
 		let parts = file.path.split(my_seperator);
@@ -93,20 +90,22 @@ export class DecryptComponent implements OnInit {
 	}
 	select_decryption_destination_folder() {
 		this.shared_functions.open_folder_select_dialogue(this.shared_functions.BASE_DIR)
-			.then((result: any) => {
-				console.log(result);
-				this.decrypt_in_place = true;
-				if( (result||{}).length<=0) {
-					this.decryption_destination_folder = result;
-					this.other_errors = this.other_errors.filter((err) => {err.type=="destination_path_error"})
-				}
-			})
+		.then((result: any) => {
+			console.log(result);
+			this.decrypt_in_place = true;
+			if( (result||[]).length<=0) {
+				// no folder selected
+				return;
+			}
+			this.decryption_destination_folder = result;
+			this.other_errors = this.other_errors.filter((err) => {err.type=="destination_path_error"})
+		})
 	}
 	select_files_to_decrypt() {
 		this.refresh_variables();
 		this.shared_functions.open_files_select_dialogue(this.shared_functions.BASE_DIR, ["dfort"])
 			.then((result: any) => {
-				if (result == null || result.length == 0) {
+				if ((result||[]).length == 0) {
 					this.other_errors.push({ type: "file_selection_error", description: "Please select files to decrypt" });
 					return;
 				}
@@ -162,7 +161,7 @@ export class DecryptComponent implements OnInit {
 			return filtered_entries;
 		}
 		this.shared_functions.open_folder_select_dialogue().then((result: any) => {
-			if (result == null || result.length == 0) {
+			if ((result||[]).length == 0) {
 				console.log("No folder selected");
 				this.other_errors.push({ type: "file_selection_error", description: "Please select a folder to decrypt" });
 				return;
@@ -188,6 +187,12 @@ export class DecryptComponent implements OnInit {
 			})
 		})
 	}
+	all_decryption_success() {
+		// function to be called when all the files have been decrypted
+		this.decryption_success = true;
+		this.other_errors = [];
+		this.decrypt_errors = [];
+	}
 	async send_decryption_command(file: FileObj) {
 		let relative_path = await this.get_relative_decrypted_file_path(file, this.decryption_selected_folder);
 		let my_path = await join(this.decryption_destination_folder, relative_path);
@@ -202,6 +207,9 @@ export class DecryptComponent implements OnInit {
 				file.decrypted = true;
 				this.completed_files += 1;
 				this.progress_bar_value = Math.round((this.completed_files / this.total_files) * 100);
+				if (this.completed_files == this.total_files && this.decrypt_errors.length == 0) {
+					this.all_decryption_success();
+				}
 			}
 		).catch((err: any) => {
 			file.decryption_error = true;
@@ -234,6 +242,10 @@ export class DecryptComponent implements OnInit {
 		if (this.decryption_destination_folder == "") {
 			this.other_errors.push({ type: "destination_path_error", description: "No destination folder selected" });
 			console.log("No destination folder selected");
+			return true;
+		}
+		if (this.shared_functions.key == "") {
+			this.other_errors.push({type: "key_error",description: "No key entered"});
 			return true;
 		}
 		return false;
