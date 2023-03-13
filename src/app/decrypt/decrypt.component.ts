@@ -241,12 +241,12 @@ export class DecryptComponent implements OnInit {
 		var target = evt.target;
 		console.log(target.value);
 		if (target.checked) {
-				if(target.value == "decrypt_in_place") {
-					this.set_decrypt_in_place()
-				}
-				else if(target.value == "decrypt_in_destination") {
-					this.select_decryption_destination_folder()
-				}
+			if(target.value == "decrypt_in_place") {
+				this.set_decrypt_in_place()
+			}
+			else if(target.value == "decrypt_in_destination") {
+				this.select_decryption_destination_folder()
+			}
 		}
-	  }
+	}
 }

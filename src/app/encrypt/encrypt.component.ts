@@ -197,4 +197,17 @@ export class EncryptComponent implements OnInit {
 		}
 		this.encrypt_dir(this.encrypt_dir_obj);
 	}
+	handleChange(evt:any) {
+
+		var target = evt.target;
+		console.log(target.value);
+		if (target.checked) {
+			if(target.value == "encrypt_in_place") {
+				this.set_encrypt_in_place()
+			}
+			else if(target.value == "encrypt_in_destination") {
+				this.select_encryption_destination_folder()
+			}
+		}
+	}
 }
