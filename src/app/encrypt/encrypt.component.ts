@@ -27,12 +27,14 @@ export class EncryptComponent implements OnInit {
 	encryption_destination_folder: string = "";
 	encryption_success: boolean = false;
 	encrypt_errors: ErrorObj[] = [];
+	other_errors: ErrorObj[] = [];
 
 	progress_bar_value: number = 0;
 	total_files: number = 0;
 	completed_files: number = 0;
 
 	encrypt_in_place: boolean = false;
+	encryption_started: boolean = false;
 
 	async set_encrypt_in_place() {
 		// set the destination folder to the selected folder
@@ -41,7 +43,7 @@ export class EncryptComponent implements OnInit {
 		// in case of file select name eg. "path_to_folder/Encrypt/file.txt" -> "path_to_folder/Encrypt"
 		this.encrypt_in_place = true;
 		if(this.FILE_SELECTION_ENABLED == undefined){
-			this.encrypt_errors.push({type:"file_selection_error",description: "Please select a folder or files to encrypt"});
+			this.other_errors.push({type:"file_selection_error",description: "Please select a folder or files to encrypt"});
 			return;
 		}
 		let my_path_arr: string[] = [];
@@ -63,10 +65,12 @@ export class EncryptComponent implements OnInit {
 		this.encryption_destination_folder = this.shared_functions.BASE_DIR + "\\Encrypt";
 		this.encryption_success = false;
 		this.encrypt_errors = [];
+		this.other_errors = [];
 		this.progress_bar_value = 0;
 		this.total_files = 0;
 		this.completed_files = 0;
 		this.encrypt_in_place = false;
+		this.encryption_started = false;
 	}
 	async get_relative_encrypted_file_path(file: FileObj, src_folder: string = "") {
 		// gets the file obj and the selected folder for encryption
@@ -165,18 +169,19 @@ export class EncryptComponent implements OnInit {
 	}
 	check_errors() {
 		if (this.encryption_selected_files.length == 0) {
-			this.encrypt_errors.push({type: "selection_error",description: "No files selected"});
+			this.other_errors.push({type: "selection_error",description: "No files selected"});
 			console.log("No files selected");
 			return true;
 		}
 		if (this.encryption_destination_folder == "") {
-			this.encrypt_errors.push({type: "destination_path_error",description: "No destination folder selected"});
+			this.other_errors.push({type: "destination_path_error",description: "No destination folder selected"});
 			console.log("No destination folder selected");
 			return true;
 		}
 		return false;
 	}
 	async encrypt() {
+		this.encryption_started = true;
 		this.total_files = this.encryption_selected_files.length;
 		if (this.check_errors()) {
 			return;
