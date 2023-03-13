@@ -88,6 +88,7 @@ export class EncryptComponent implements OnInit {
 	}
 	select_encryption_destination_folder() {
 		this.shared_functions.open_folder_select_dialogue(this.shared_functions.BASE_DIR).then((result: any) => {
+			this.encrypt_in_place = false;
 			this.encryption_destination_folder = result;
 		})
 	}
@@ -95,7 +96,7 @@ export class EncryptComponent implements OnInit {
 		this.refresh_variables();
 		this.shared_functions.open_files_select_dialogue()
 			.then((result: any) => {
-				if (result.length == 0) {
+				if (result == null || result.length == 0) {
 					return;
 				}
 				let all_files = result.map((file: any) => {
@@ -114,7 +115,7 @@ export class EncryptComponent implements OnInit {
 	select_folder_to_encrypt() {
 		this.refresh_variables();
 		this.shared_functions.open_folder_select_dialogue(this.shared_functions.BASE_DIR).then((result: any) => {
-			if (result.length == 0) {
+			if (result == null || result.length == 0) {
 				return;
 			}
 			this.encryption_selected_folder = result;
