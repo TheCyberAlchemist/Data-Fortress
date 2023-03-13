@@ -14,6 +14,12 @@ export interface DirObj {
 	decryption_error?: boolean;
 }
 
+export interface ErrorObj {
+	type: string;
+	file_name?: string;
+	description?: string;	
+}
+
 export interface FileObj {
 	path: string;
 	name: string;
@@ -29,8 +35,8 @@ export class SharedFunctionsService {
 	title = 'data-fortress';
 	key: string = "asd";
 	current_state: string = "";
-	BASE_DIR: string = "D:\\Somewhere\\Tests\\Rust Encryptions\\try3";
-	// BASE_DIR: string = "C:\\Users\\yogesh\\Desktop";
+	// BASE_DIR: string = "D:\\Somewhere\\Tests\\Rust Encryptions\\try3";
+	BASE_DIR: string = "C:\\Users\\yogesh\\Desktop";
 	
 	change_key(e: any) {
 		this.key = e.target.value;

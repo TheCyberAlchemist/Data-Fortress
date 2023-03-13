@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {invoke } from '@tauri-apps/api';
 import { readDir } from '@tauri-apps/api/fs';
-import { DirObj, FileObj, SharedFunctionsService } from '../shared-functions.service';
+import { DirObj, ErrorObj, FileObj, SharedFunctionsService } from '../shared-functions.service';
 
 import { join,basename,sep } from '@tauri-apps/api/path';
 
@@ -26,7 +26,7 @@ export class EncryptComponent implements OnInit {
 
 	encryption_destination_folder: string = "";
 	encryption_success: boolean = false;
-	encrypt_errors: string[] = [];
+	encrypt_errors: ErrorObj[] = [];
 
 	progress_bar_value: number = 0;
 	total_files: number = 0;
@@ -41,7 +41,7 @@ export class EncryptComponent implements OnInit {
 		// in case of file select name eg. "path_to_folder/Encrypt/file.txt" -> "path_to_folder/Encrypt"
 		this.encrypt_in_place = true;
 		if(this.FILE_SELECTION_ENABLED == undefined){
-			this.encrypt_errors.push("Please select a folder or files to encrypt");
+			this.encrypt_errors.push({type:"file_selection_error",description: "Please select a folder or files to encrypt"});
 			return;
 		}
 		let my_path_arr: string[] = [];
@@ -146,7 +146,7 @@ export class EncryptComponent implements OnInit {
 			}
 		).catch((err: any) => {
 			file.encryption_error = true;
-			this.encrypt_errors.push("Error encrypting file -> " + file.name);
+			this.encrypt_errors.push({type: 'encryption_error',description: "Error encrypting file: ", file_name : file.name});
 			this.total_files -= 1;
 			this.progress_bar_value = Math.round((this.completed_files / this.total_files) * 100);
 			console.log(err);
@@ -164,12 +164,12 @@ export class EncryptComponent implements OnInit {
 	}
 	check_errors() {
 		if (this.encryption_selected_files.length == 0) {
-			this.encrypt_errors.push("No files selected");
+			this.encrypt_errors.push({type: "selection_error",description: "No files selected"});
 			console.log("No files selected");
 			return true;
 		}
 		if (this.encryption_destination_folder == "") {
-			this.encrypt_errors.push("No destination folder selected");
+			this.encrypt_errors.push({type: "destination_path_error",description: "No destination folder selected"});
 			console.log("No destination folder selected");
 			return true;
 		}

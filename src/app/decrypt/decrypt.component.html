@@ -1,20 +1,24 @@
 <div class="grid grid-cols-12 gap-6 mt-8">
     <div class="col-span-12 lg:col-span-12 2xl:col-span-12">
+        <!-- #region Heading & Buttons -->
         <div class="flex">
-            <h2 class="intro-y text-lg font-medium mr-auto mt-2">Decrypt Files and Folders {{shared_functions.key}}</h2>
+            <h2 class="intro-y text-lg font-medium mr-auto mt-2">Decrypt Files and Folders</h2>
             <!-- BEGIN: Add File Button -->
             <div class="intro-y flex flex-col-reverse sm:flex-row items-center">
                 <div class="w-full sm:w-auto relative mr-auto mt-3 sm:mt-0">
 
                 </div>
                 <div class="w-full sm:w-auto flex">
-                    <button class="btn btn-primary shadow-md mr-2" (click)="select_files_to_decrypt()">Select Files</button>
-                    <button class="btn btn-primary shadow-md mr-2"
-                        (click)="select_folder_to_decrypt()">Select Folder</button>
+                    <button class="btn btn-primary shadow-md mr-2" (click)="select_files_to_decrypt()">Select
+                        Files</button>
+                    <button class="btn btn-primary shadow-md mr-2" (click)="select_folder_to_decrypt()">Select
+                        Folder</button>
                 </div>
             </div>
         </div>
+        <!-- #endregion -->
 
+        <!-- #region Intro section -->
         <div class="bg-gradient-to-r from-purple-500 to-pink-500 mt-4 p-1 rounded-lg"
             *ngIf="FILE_SELECTION_ENABLED==undefined">
             <div
@@ -31,12 +35,34 @@
                 </div>
             </div>
         </div>
+        <!-- #endregion -->
+
+
+        <!-- #region Progress bar -->
+        <div class="progress_bar" *ngIf="total_files">
+            <div class="flex justify-between mb-1">
+                <span class="text-base font-medium text-blue-700 dark:text-white">
+                    <span *ngIf="progress_bar_value==100">Decryption Successful.</span>
+                    <span *ngIf="progress_bar_value!=100">Decrypting...</span>
+                </span>
+
+                <span
+                    class="text-sm font-medium text-blue-700 dark:text-white">{{completed_files}}/{{total_files}}</span>
+            </div>
+            <div class="w-full rounded-full h-2.5 dark:bg-gray-700">
+                <div class="bg-gradient-to-r from-purple-900 to-pink-500 h-2.5 rounded-full"
+                    [ngStyle]="{'width': progress_bar_value+'%'}"></div>
+            </div>
+        </div>
+        <!-- #endregion -->
+
+
         <!-- #region Files -->
         <ng-container *ngIf="FILE_SELECTION_ENABLED">
             <h2 class="dark:text-md mt-4 font-bold">Total files selected: {{decryption_selected_files.length}}</h2>
-            <div class="intro-y grid grid-cols-12 gap-3 sm:gap-6 mt-5 file_section" id="files">
+            <div class="intro-y grid grid-cols-12 gap-3 sm:gap-6 mt-5 file_section p-3" id="files">
                 <ng-container *ngFor="let file of decryption_selected_files">
-                    <div class="intro-y col-span-6 sm:col-span-4 md:col-span-3 2xl:col-span-2">
+                    <div class="intro-y col-span-12 sm:col-span-4 md:col-span-3 2xl:col-span-2">
                         <div class="file box rounded-md px-5 pt-8 pb-5 px-3 sm:px-5 relative zoom-in"
                             [ngClass]="{'box-success' : file.decrypted,'box-error':file.decryption_error}">
                             <div class="absolute left-0 top-0 mt-3 ml-3" *ngIf="file.decrypted">
@@ -49,7 +75,8 @@
                             <a class="w-3/5 file__icon file__icon--file mx-auto">
                                 <div class="file__icon__file-name">{{file.extension}}</div>
                             </a>
-                            <a class="block font-medium mt-4 text-center truncate" title="{{file.path}}">{{file.name}}</a>
+                            <a class="block font-medium mt-4 text-center truncate"
+                                title="{{file.path}}">{{file.name}}</a>
                             <div class="text-slate-500 text-xs text-center mt-0.5">{{file.size_in_kb | number:'.2' }} KB
                             </div>
                         </div>
@@ -58,8 +85,6 @@
             </div>
         </ng-container>
         <!-- #endregion -->
-
-
 
 
         <!-- #region Folder-->
@@ -73,7 +98,7 @@
                             title="{{decryption_selected_folder}}">{{decryption_selected_folder}}</a>
                     </div>
                 </div>
-                <div class="intro-y col-span-6 sm:col-span-8 md:col-span-9 2xl:col-span-10">
+                <div class="intro-y col-span-8 sm:col-span-8 md:col-span-9 2xl:col-span-10">
                     <ng-template #ul_li let-obj>
                         <ul
                             class="text-base font-medium text-gray-900 bg-dark border border-gray-200 rounded-lg dark:border-gray-600 ">
@@ -118,7 +143,8 @@
             </h4>
 
             <div class="block my-2">
-                <label for="helper-text" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Secret Key</label>
+                <label for="helper-text" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Secret
+                    Key</label>
                 <div>
                     <input type="text" id="helper-text" aria-describedby="helper-text-explanation"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 inline w-75 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -133,19 +159,35 @@
         </ng-container>
     </div>
 </div>
-<div class="progress_bar" *ngIf="total_files">
-    <div class="flex justify-between mb-1">
-        <span class="text-base font-medium text-blue-700 dark:text-white">Decrypting</span>
-        <span class="text-sm font-medium text-blue-700 dark:text-white">{{completed_files}}/{{total_files}}</span>
-    </div>
-    <div class="w-full rounded-full h-2.5 dark:bg-gray-700">
-        <div class="bg-gradient-to-r from-purple-900 to-pink-500 h-2.5 rounded-full" [ngStyle]="{'width': progress_bar_value+'%'}"></div>
-    </div>
-</div>
 <div class="errors_div">
     <ul>
-        <li *ngFor="let error of decrypt_errors">
-            {{error}}
+        <li *ngFor="let error of decrypt_errors" class="">
+            <h4 class="inline border border-red-900 rounded-lg dark:border-gray-900 p-3 h-100">
+                <i class="fa-solid fa-triangle-exclamation"></i> &nbsp;
+                <span class="mb-2 inline text-sm font-medium text-gray-900 dark:text-white">{{error.description}}
+                </span>
+                {{error.file_name}}
+            </h4>
         </li>
     </ul>
+</div>
+
+
+<div class="errors_div mt-4">
+    <div class="flex p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+        role="alert">
+        <svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clip-rule="evenodd"></path>
+        </svg>
+        <div>
+            <span class="font-medium">Error Decrypting Files</span>
+            <ul class="ml-4 list-disc list-inside">
+                <li *ngFor="let error of decrypt_errors"> <span class="font-semibold">File Name: </span>
+                    {{error.file_name}}</li>
+            </ul>
+        </div>
+    </div>
 </div>

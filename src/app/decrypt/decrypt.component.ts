@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { invoke } from '@tauri-apps/api';
 import { readDir } from '@tauri-apps/api/fs';
-import { DirObj, FileObj, SharedFunctionsService } from '../shared-functions.service';
+import { DirObj, ErrorObj, FileObj, SharedFunctionsService } from '../shared-functions.service';
 
 import { join,basename,sep } from '@tauri-apps/api/path';
 import { filter } from 'rxjs';
@@ -24,7 +24,7 @@ export class DecryptComponent implements OnInit {
 	decryption_destination_folder: string = "";
 	decrypt_dir_obj: DirObj[] = [];
 	decryption_success: boolean = false;
-	decrypt_errors: string[] = [];
+	decrypt_errors: ErrorObj[] = [];
 
 	progress_bar_value: number = 0;
 	total_files: number = 0;
@@ -52,7 +52,7 @@ export class DecryptComponent implements OnInit {
 		// in case of file select name eg. "path_to_folder/Encrypt/file.txt" -> "path_to_folder/Encrypt"
 		this.decrypt_in_place = true;
 		if(this.FILE_SELECTION_ENABLED == undefined){
-			this.decrypt_errors.push("Please select a folder or files to decrypt");
+			this.decrypt_errors.push({type:"file_selection_error",description: "Please select a folder or files to decrypt"});
 			return;
 		}
 		let my_path_arr: string[] = [];
@@ -102,7 +102,7 @@ export class DecryptComponent implements OnInit {
 					return file.split(".").pop() == "dfort";
 				});
 				if (result.length == 0) {
-					this.decrypt_errors.push("Please select files with the .dfort extension");
+					this.decrypt_errors.push({type:"file_type_error",description: "Please select files with the .dfort extension"});
 					return;
 				}
 				let all_files: FileObj[] = result.map((file: any) => { return { path: file } });
@@ -172,7 +172,8 @@ export class DecryptComponent implements OnInit {
 			}
 		).catch((err: any) => {
 			file.decryption_error = true;
-			this.decrypt_errors.push("Error decrypting file -> " + file.name);
+			// this.decrypt_errors.push("⚠️ Error decrypting file: " + file.name);
+			this.decrypt_errors.push({file_name: file.name, type: "decryption_error", description:"Error decrypting file:"});
 			this.total_files -= 1;
 			this.progress_bar_value = Math.round((this.completed_files / this.total_files) * 100);
 			console.log(err);
@@ -190,12 +191,12 @@ export class DecryptComponent implements OnInit {
 	}
 	check_errors(){
 		if (this.decryption_selected_files.length == 0) {
-			this.decrypt_errors.push("No files selected");
+			this.decrypt_errors.push({type: "selection_error",description: "No files selected"});
 			console.log("No files selected");
 			return true;
 		}
 		if (this.decryption_destination_folder == "") {
-			this.decrypt_errors.push("No destination folder selected");
+			this.decrypt_errors.push({type: "destination_path_error",description: "No destination folder selected"});
 			console.log("No destination folder selected");
 			return true;
 		}

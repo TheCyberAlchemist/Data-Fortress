@@ -43,13 +43,15 @@
     border: 3px solid var(--primary);
 }
 
-.folder_section > .intro-y.col-span-6 > ul{
+.folder_section > .intro-y.col-span-8 > ul{
     overflow-y: auto;
-    height:60vh;
+    max-height:60vh;
+    overflow-x: hidden;
 }
 .file_section{
     overflow-y: auto;
-    height: 60vh;
+    max-height: 60vh;
+    overflow-x: hidden;
 }
 
 .box-success {
