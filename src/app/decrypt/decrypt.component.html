@@ -95,7 +95,7 @@
                         *ngIf="decrypt_dir_obj.length!=0">
                         <a class="w-3/5 file__icon file__icon--directory mx-auto"></a>
                         <a class="block font-medium mt-4 text-center truncate"
-                            title="{{decryption_selected_folder}}">{{decryption_selected_folder}}</a>
+                            title="{{decryption_selected_folder}}">{{get_selected_folder_name(decryption_selected_folder)}}</a>
                     </div>
                 </div>
                 <div class="intro-y col-span-8 sm:col-span-8 md:col-span-9 2xl:col-span-10">
@@ -128,7 +128,7 @@
         </ng-container>
         <!-- #endregion -->
 
-        <ng-container *ngIf="decryption_selected_files.length>0 || decryption_selected_folder.length  ">
+        <ng-container *ngIf="decryption_selected_files.length>0">
             <!-- <button class="btn btn-primary shadow-md mr-2 mt-4" (click)="select_decryption_destination_folder()">
                 Select Destination Folder
             </button>
@@ -137,21 +137,29 @@
             </button> -->
             <ul class="grid w-full gap-6 md:grid-cols-2">
                 <li>
-                    <input type="radio" id="hosting-small" name="select_destination" value="decrypt_in_destination" class="hidden peer" required (change)="handleChange($event)">
+                    <input type="radio" id="hosting-small" name="select_destination" value="decrypt_in_destination" class="hidden peer" required (click)="select_decryption_destination_folder()">
                     <label for="hosting-small" class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-dark border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">                           
                         <div class="block">
                             <div class="w-full text-lg font-semibold">Select Destination Folder</div>
                             <div class="w-full">Make a decrypted copy of files.</div>
+                            <span class="mt-2" *ngIf="!decrypt_in_place && decryption_destination_folder.length>0">
+                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700">
+                                <span class="font-bold">Decryption path:</span> <span class="ml-2 dark:text-slate-200">{{decryption_destination_folder}} </span>
+                            </span>
                         </div>
                         <svg aria-hidden="true" class="w-6 h-6 ml-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                     </label>
                 </li>
                 <li>
-                    <input type="radio" id="hosting-big" name="select_destination" value="decrypt_in_place" class="hidden peer" (change)="handleChange($event)">
+                    <input type="radio" id="hosting-big" name="select_destination" value="decrypt_in_place" class="hidden peer" (click)="set_decrypt_in_place()">
                     <label for="hosting-big" class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-dark border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
                         <div class="block">
                             <div class="w-full text-lg font-semibold">Decrypt in place</div>
                             <div class="w-full">Replace files with decrypted files</div>
+                            <span class="mt-2" *ngIf="decrypt_in_place && decryption_destination_folder.length>0">
+                                <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700">
+                                <span class="font-bold">Decryption path:</span> <span class="ml-2 dark:text-slate-200">{{decryption_destination_folder}} </span>
+                            </span>
                         </div>
                         <svg aria-hidden="true" class="w-6 h-6 ml-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                     </label>
@@ -159,13 +167,14 @@
             </ul>
 
             <div class="block my-2">
-                <label for="helper-text" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Secret
-                    Key</label>
+                <label for="helper-text" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    Secret Key
+                </label>
                 <div>
                     <input type="text" id="helper-text" aria-describedby="helper-text-explanation"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 inline w-75 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="s3creT" (keyup)="shared_functions.change_key($event)"
-                        value="{{shared_functions.key}}">
+                        value="{{shared_functions.key}}" autocomplete="off">
                     <button class="btn btn-primary shadow-md ml-5" 
                     (click)="decrypt()" [disabled]="decryption_started">
                         Decrypt All
@@ -201,7 +210,6 @@
         </div>
     </div>
 </div>
-
 <div class="errors_div mt-4" *ngIf="other_errors.length">
     <div class="flex p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
         role="alert">
@@ -215,7 +223,8 @@
             <span class="font-medium">Errors</span>
             <ul class="ml-4 list-disc list-inside">
                 <li *ngFor="let error of other_errors"> <span class="font-semibold">{{error.type}}</span>
-                    {{error.description}}</li>
+                    {{error.description}}
+                </li>
             </ul>
         </div>
     </div>

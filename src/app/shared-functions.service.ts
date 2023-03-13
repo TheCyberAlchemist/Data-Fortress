@@ -33,7 +33,7 @@ export interface FileObj {
 @Injectable()
 export class SharedFunctionsService {
 	title = 'data-fortress';
-	key: string = "asd";
+	key: string = "";
 	current_state: string = "";
 	// BASE_DIR: string = "D:\\Somewhere\\Tests\\Rust Encryptions\\try3";
 	BASE_DIR: string = "";

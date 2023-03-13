@@ -12,3 +12,5 @@ node_modules/
 # add angular cache
 .angular/cache/
 src-tauri/src/old_funcs.rs
+# add dist folder
+dist/
