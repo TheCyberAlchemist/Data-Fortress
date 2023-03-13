@@ -73,8 +73,17 @@ export class DecryptComponent implements OnInit {
 			return file.name.split(".dfort")[0];
 		}
 		let my_seperator = sep ;
-
-		let selected_folder_name = await basename(src_folder);
+		// console.log("my_seperator :: ", my_seperator);
+		// console.log("my_seperator :: ", src_folder);
+		// console.log("my_seperator :: ", src_folder.split(my_seperator));
+		
+		let selected_folder_name = src_folder.split(my_seperator).pop();
+		if (selected_folder_name == undefined) {
+			selected_folder_name = "";
+		}else if(selected_folder_name == ""){
+			selected_folder_name = src_folder.split(my_seperator)[src_folder.split(my_seperator).length - 2];
+		}
+		console.log("my_seperator :: ", selected_folder_name);
 
 		let parts = file.path.split(my_seperator);
 		parts = parts.slice(parts.indexOf(selected_folder_name));
@@ -88,6 +97,7 @@ export class DecryptComponent implements OnInit {
 		this.shared_functions.open_folder_select_dialogue(this.shared_functions.BASE_DIR)
 		.then((result: any) => {
 			console.log(result);
+			this.decrypt_in_place = true;
 			this.decryption_destination_folder = result;
 		})
 	}

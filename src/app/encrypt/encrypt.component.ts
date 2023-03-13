@@ -88,6 +88,7 @@ export class EncryptComponent implements OnInit {
 	}
 	select_encryption_destination_folder() {
 		this.shared_functions.open_folder_select_dialogue(this.shared_functions.BASE_DIR).then((result: any) => {
+			this.encrypt_in_place = false;
 			this.encryption_destination_folder = result;
 		})
 	}
