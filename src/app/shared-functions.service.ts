@@ -36,7 +36,7 @@ export class SharedFunctionsService {
 	key: string = "asd";
 	current_state: string = "";
 	// BASE_DIR: string = "D:\\Somewhere\\Tests\\Rust Encryptions\\try3";
-	BASE_DIR: string = "C:\\Users\\yogesh\\Desktop";
+	BASE_DIR: string = "";
 	
 	change_key(e: any) {
 		this.key = e.target.value;
@@ -44,14 +44,14 @@ export class SharedFunctionsService {
 	open_folder_select_dialogue(defaultPath: string = this.BASE_DIR, title: string = "Select a folder") {
 		return dialog.open({
 			title: title,
-			defaultPath: defaultPath,
+			// defaultPath: defaultPath,
 			directory: true,
 		})
 	}
 	open_files_select_dialogue(defaultPath: string = this.BASE_DIR,extensions: string[] = ["*"], title: string = "Select files") {
 		return dialog.open({
 			title: title,
-			defaultPath: defaultPath,
+			// defaultPath: defaultPath,
 			multiple: true,
 			filters: [{ 
 				name: "All Files", 

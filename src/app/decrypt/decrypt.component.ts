@@ -40,7 +40,7 @@ export class DecryptComponent implements OnInit {
 		this.decryption_selected_folder = "";
 		this.FILE_SELECTION_ENABLED = undefined;
 		this.decrypt_dir_obj = [];
-		this.decryption_destination_folder = this.shared_functions.BASE_DIR + "\\Decrypt";
+		this.decryption_destination_folder = "";
 		this.decryption_success = false;
 		this.decrypt_errors = [];
 		this.other_errors = [];
@@ -103,7 +103,10 @@ export class DecryptComponent implements OnInit {
 			.then((result: any) => {
 				console.log(result);
 				this.decrypt_in_place = true;
-				this.decryption_destination_folder = result;
+				if( result !=null || result.length<=0) {
+					this.decryption_destination_folder = result;
+					this.other_errors = this.other_errors.filter((err) => {err.type=="destination_path_error"})
+				}
 			})
 	}
 	select_files_to_decrypt() {
@@ -152,7 +155,7 @@ export class DecryptComponent implements OnInit {
 			}
 			return filtered_entries;
 		}
-		this.shared_functions.open_folder_select_dialogue(this.shared_functions.BASE_DIR + "\\Encrypt").then((result: any) => {
+		this.shared_functions.open_folder_select_dialogue().then((result: any) => {
 			if (result == null || result.length == 0) {
 				console.log("No folder selected");
 				return;
@@ -221,11 +224,11 @@ export class DecryptComponent implements OnInit {
 		return false;
 	}
 	async decrypt() {
-		this.decryption_started = true;
-		this.total_files = this.decryption_selected_files.length;
 		if (this.check_errors()) {
 			return;
 		}
+		this.decryption_started = true;
+		this.total_files = this.decryption_selected_files.length;
 		if (this.FILE_SELECTION_ENABLED) {
 			// if files are selected directly
 			for (let file of this.decryption_selected_files) {

@@ -62,7 +62,7 @@ export class EncryptComponent implements OnInit {
 		this.encryption_selected_folder = "";
 		this.FILE_SELECTION_ENABLED = undefined;
 		this.encrypt_dir_obj = [];
-		this.encryption_destination_folder = this.shared_functions.BASE_DIR + "\\Encrypt";
+		this.encryption_destination_folder = "";
 		this.encryption_success = false;
 		this.encrypt_errors = [];
 		this.other_errors = [];
@@ -93,7 +93,10 @@ export class EncryptComponent implements OnInit {
 	select_encryption_destination_folder() {
 		this.shared_functions.open_folder_select_dialogue(this.shared_functions.BASE_DIR).then((result: any) => {
 			this.encrypt_in_place = false;
-			this.encryption_destination_folder = result;
+			if( result !=null || result.length<=0) {
+				this.encryption_destination_folder = result;
+				this.other_errors = this.other_errors.filter((err) => {err.type=="destination_path_error"})
+			}
 		})
 	}
 	select_files_to_encrypt() {
@@ -181,11 +184,11 @@ export class EncryptComponent implements OnInit {
 		return false;
 	}
 	async encrypt() {
-		this.encryption_started = true;
-		this.total_files = this.encryption_selected_files.length;
 		if (this.check_errors()) {
 			return;
 		}
+		this.encryption_started = true;
+		this.total_files = this.encryption_selected_files.length;
 		if (this.FILE_SELECTION_ENABLED) {
 			// if files are selected directly
 			for (let file of this.encryption_selected_files) {
