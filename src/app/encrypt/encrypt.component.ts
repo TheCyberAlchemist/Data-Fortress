@@ -93,13 +93,10 @@ export class EncryptComponent implements OnInit {
 	select_encryption_destination_folder() {
 		this.shared_functions.open_folder_select_dialogue(this.shared_functions.BASE_DIR).then((result: any) => {
 			this.encrypt_in_place = false;
-			console.log("before if::",result||[]);	
 			if((result||[]).length<=0) {
-				// console.log("no folder selected");
-
+				console.log("no folder selected");
 				return;
 			}
-			console.log("After if",result);
 			this.encryption_destination_folder = result;
 			this.other_errors = this.other_errors.filter((err) => {err.type=="destination_path_error"})
 		})

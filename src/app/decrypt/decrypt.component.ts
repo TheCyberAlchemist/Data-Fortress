@@ -89,10 +89,8 @@ export class DecryptComponent implements OnInit {
 		return relative_path;
 	}
 	select_decryption_destination_folder() {
-		this.shared_functions.open_folder_select_dialogue(this.shared_functions.BASE_DIR)
-		.then((result: any) => {
-			console.log(result);
-			this.decrypt_in_place = true;
+		this.shared_functions.open_folder_select_dialogue(this.shared_functions.BASE_DIR).then((result: any) => {
+			this.decrypt_in_place = false;
 			if( (result||[]).length<=0) {
 				// no folder selected
 				return;

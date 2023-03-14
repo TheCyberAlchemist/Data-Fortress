@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "data-fortress",
-    "version": "0.1.0"
+    "version": "0.9.1"
   },
   "tauri": {
     "allowlist": {
