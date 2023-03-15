@@ -3,8 +3,7 @@ import { invoke } from '@tauri-apps/api';
 import { readDir } from '@tauri-apps/api/fs';
 import { DirObj, ErrorObj, FileObj, SharedFunctionsService } from '../shared-functions.service';
 
-import { join, basename, sep } from '@tauri-apps/api/path';
-import { filter } from 'rxjs';
+import { join, sep } from '@tauri-apps/api/path';
 
 @Component({
 	selector: 'app-decrypt',
@@ -104,7 +103,6 @@ export class DecryptComponent implements OnInit {
 		this.shared_functions.open_files_select_dialogue(this.shared_functions.BASE_DIR, ["dfort"])
 			.then((result: any) => {
 				if ((result||[]).length == 0) {
-					this.other_errors.push({ type: "file_selection_error", description: "Please select files to decrypt" });
 					return;
 				}
 				result = result.filter((file: string) => {
@@ -161,7 +159,6 @@ export class DecryptComponent implements OnInit {
 		this.shared_functions.open_folder_select_dialogue().then((result: any) => {
 			if ((result||[]).length == 0) {
 				console.log("No folder selected");
-				this.other_errors.push({ type: "file_selection_error", description: "Please select a folder to decrypt" });
 				return;
 			}
 			console.log("Selected Folder :: ", this.get_selected_folder_name(result));

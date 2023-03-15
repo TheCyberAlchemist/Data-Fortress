@@ -107,7 +107,6 @@ export class EncryptComponent implements OnInit {
 			.then((result: any) => {
 				if ((result||[]).length == 0) {
 					// no files selected
-					this.other_errors.push({ type: "file_selection_error", description: "Please select files to encrypt" });
 					return;
 				}
 				let all_files = result.map((file: any) => {

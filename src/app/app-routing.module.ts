@@ -4,7 +4,8 @@ import { DecryptComponent } from './decrypt/decrypt.component';
 import { EncryptComponent } from './encrypt/encrypt.component';
 
 const routes: Routes = [
-  { path: 'encrypt', component: EncryptComponent, },
+  { path: '', redirectTo: '/encrypt', pathMatch: 'full' },
+  { path: 'encrypt', component: EncryptComponent,},
   { path: 'decrypt', component: DecryptComponent, },
 ];
 
