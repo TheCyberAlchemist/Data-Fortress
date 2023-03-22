@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { invoke } from '@tauri-apps/api';
 import { readDir } from '@tauri-apps/api/fs';
 import { DirObj, ErrorObj, FileObj, SharedFunctionsService } from '../shared-functions.service';
@@ -33,6 +33,9 @@ export class DecryptComponent implements OnInit {
 	decrypt_in_place: boolean = false;
 
 	decryption_started: boolean = false;
+
+	@ViewChild('js_password_label') js_password_label: ElementRef<HTMLInputElement> | undefined;
+	@ViewChild('js_password') js_password: ElementRef<HTMLInputElement> | undefined;
 
 	refresh_variables() {
 		this.decryption_selected_files = [];
@@ -272,6 +275,18 @@ export class DecryptComponent implements OnInit {
 			else if(target.value == "decrypt_in_destination") {
 				this.select_decryption_destination_folder()
 			}
+		}
+	}
+
+
+	toggle_key_visibility() {
+		if (this.js_password.nativeElement.type === "password") {
+			this.js_password.nativeElement.type = "text";
+			this.js_password_label.nativeElement.innerHTML = "hide";
+		}
+		else {
+			this.js_password.nativeElement.type = "password";
+			this.js_password_label.nativeElement.innerHTML = "show";
 		}
 	}
 }

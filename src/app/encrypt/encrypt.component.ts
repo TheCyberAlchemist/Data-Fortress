@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import {invoke } from '@tauri-apps/api';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { invoke } from '@tauri-apps/api';
 import { readDir } from '@tauri-apps/api/fs';
 import { DirObj, ErrorObj, FileObj, SharedFunctionsService } from '../shared-functions.service';
 
-import { join,basename,sep } from '@tauri-apps/api/path';
+import { join, basename, sep } from '@tauri-apps/api/path';
 
 
 @Component({
@@ -21,7 +21,7 @@ export class EncryptComponent implements OnInit {
 
 	encryption_selected_files: FileObj[] = [];
 	encryption_selected_folder: string = "";
-	FILE_SELECTION_ENABLED: boolean|undefined = undefined;
+	FILE_SELECTION_ENABLED: boolean | undefined = undefined;
 	encrypt_dir_obj: DirObj[] = [];
 
 	encryption_destination_folder: string = "";
@@ -36,23 +36,26 @@ export class EncryptComponent implements OnInit {
 	encrypt_in_place: boolean = false;
 	encryption_started: boolean = false;
 
+	@ViewChild('js_password_label') js_password_label: ElementRef<HTMLInputElement> | undefined;
+	@ViewChild('js_password') js_password: ElementRef<HTMLInputElement> | undefined;
+
 	async set_encrypt_in_place() {
 		// set the destination folder to the selected folder
 		// function removes the last element of the array
 		// in case of folder select name eg. "path_to_folder/Encrypt" -> "path_to_folder"
 		// in case of file select name eg. "path_to_folder/Encrypt/file.txt" -> "path_to_folder/Encrypt"
 		this.encrypt_in_place = true;
-		if(this.FILE_SELECTION_ENABLED == undefined){
-			this.other_errors.push({type:"file_selection_error",description: "Please select a folder or files to encrypt"});
+		if (this.FILE_SELECTION_ENABLED == undefined) {
+			this.other_errors.push({ type: "file_selection_error", description: "Please select a folder or files to encrypt" });
 			return;
 		}
 		let my_path_arr: string[] = [];
 		if (this.FILE_SELECTION_ENABLED) {
 			my_path_arr = this.encryption_selected_files[0].path.split(sep);
-		}else{
+		} else {
 			my_path_arr = this.encryption_selected_folder.split(sep);
 		}
-		
+
 		my_path_arr.pop();
 		this.encryption_destination_folder = my_path_arr.join(sep);
 
@@ -78,14 +81,14 @@ export class EncryptComponent implements OnInit {
 		if (src_folder == "") {
 			return `${file.name}.dfort`;
 		}
-		let my_seperator = sep ;
-		
+		let my_seperator = sep;
+
 		let selected_folder_name = await basename(src_folder);
 
 		let parts = file.path.split(my_seperator);
 		parts = parts.slice(parts.indexOf(selected_folder_name));
 		parts[parts.length - 1] = `${parts[parts.length - 1]}.dfort`;
-		
+
 		let relative_path = await join(...parts);
 
 		return relative_path;
@@ -93,9 +96,9 @@ export class EncryptComponent implements OnInit {
 	select_encryption_destination_folder() {
 		this.shared_functions.open_folder_select_dialogue(this.shared_functions.BASE_DIR).then((result: any) => {
 			this.encrypt_in_place = false;
-			if((result||[]).length<=0) {
-				console.log("no folder selected");
-				return;
+			if (result != null || result.length <= 0) {
+				this.encryption_destination_folder = result;
+				this.other_errors = this.other_errors.filter((err) => { err.type == "destination_path_error" })
 			}
 			this.encryption_destination_folder = result;
 			this.other_errors = this.other_errors.filter((err) => {err.type=="destination_path_error"})
@@ -168,7 +171,7 @@ export class EncryptComponent implements OnInit {
 			}
 		).catch((err: any) => {
 			file.encryption_error = true;
-			this.encrypt_errors.push({type: 'encryption_error',description: "Error encrypting file: ", file_name : file.name});
+			this.encrypt_errors.push({ type: 'encryption_error', description: "Error encrypting file: ", file_name: file.name });
 			this.total_files -= 1;
 			this.progress_bar_value = Math.round((this.completed_files / this.total_files) * 100);
 			console.log(err);
@@ -186,12 +189,12 @@ export class EncryptComponent implements OnInit {
 	}
 	check_errors() {
 		if (this.encryption_selected_files.length == 0) {
-			this.other_errors.push({type: "selection_error",description: "No files selected"});
+			this.other_errors.push({ type: "selection_error", description: "No files selected" });
 			console.log("No files selected");
 			return true;
 		}
 		if (this.encryption_destination_folder == "") {
-			this.other_errors.push({type: "destination_path_error",description: "No destination folder selected"});
+			this.other_errors.push({ type: "destination_path_error", description: "No destination folder selected" });
 			console.log("No destination folder selected");
 			return true;
 		}
@@ -219,17 +222,28 @@ export class EncryptComponent implements OnInit {
 		}
 		this.encrypt_dir(this.encrypt_dir_obj);
 	}
-	handleChange(evt:any) {
-
+	
+	handleChange(evt: any) {
 		var target = evt.target;
-		console.log(target.value);
 		if (target.checked) {
-			if(target.value == "encrypt_in_place") {
+			if (target.value == "encrypt_in_place") {
 				this.set_encrypt_in_place()
 			}
-			else if(target.value == "encrypt_in_destination") {
+			else if (target.value == "encrypt_in_destination") {
 				this.select_encryption_destination_folder()
 			}
 		}
 	}
+
+	toggle_key_visibility() {
+		if (this.js_password.nativeElement.type === "password") {
+			this.js_password.nativeElement.type = "text";
+			this.js_password_label.nativeElement.innerHTML = "hide";
+		}
+		else {
+			this.js_password.nativeElement.type = "password";
+			this.js_password_label.nativeElement.innerHTML = "show";
+		}
+	}
+
 }

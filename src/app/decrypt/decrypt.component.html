@@ -19,10 +19,8 @@
         <!-- #endregion -->
 
         <!-- #region Intro section -->
-        <div class="bg-gradient-to-r from-purple-500 to-pink-500 mt-4 p-1 rounded-lg"
-            *ngIf="FILE_SELECTION_ENABLED==undefined">
-            <div
-                class="intro w-full p-4 text-center bg-dark border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+        <div class="bg-gradient-to-r from-purple-500 to-pink-500 mt-4 p-1 rounded-lg" *ngIf="FILE_SELECTION_ENABLED==undefined">
+            <div class="intro w-full p-4 text-center bg-dark border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
                 <h5 class="mb-2 pt-3 text-3xl font-bold text-gray-900 dark:text-white">
                     Decrypt Files faster than ever! &nbsp;
                     <i class="fa-solid fa-unlock h-50 w-50"></i>
@@ -46,12 +44,10 @@
                     <span *ngIf="progress_bar_value!=100">Decrypting...</span>
                 </span>
 
-                <span
-                    class="text-sm font-medium text-blue-700 dark:text-white">{{completed_files}}/{{total_files}}</span>
+                <span class="text-sm font-medium text-blue-700 dark:text-white">{{completed_files}}/{{total_files}}</span>
             </div>
             <div class="w-full rounded-full h-2.5 dark:bg-gray-700">
-                <div class="bg-gradient-to-r from-purple-900 to-pink-500 h-2.5 rounded-full"
-                    [ngStyle]="{'width': progress_bar_value+'%'}"></div>
+                <div class="bg-gradient-to-r from-purple-900 to-pink-500 h-2.5 rounded-full" [ngStyle]="{'width': progress_bar_value+'%'}"></div>
             </div>
         </div>
         <!-- #endregion -->
@@ -63,8 +59,7 @@
             <div class="intro-y grid grid-cols-12 gap-3 sm:gap-6 mt-5 file_section p-3" id="files">
                 <ng-container *ngFor="let file of decryption_selected_files">
                     <div class="intro-y col-span-12 sm:col-span-4 md:col-span-3 2xl:col-span-2">
-                        <div class="file box rounded-md px-5 pt-8 pb-5 px-3 sm:px-5 relative zoom-in"
-                            [ngClass]="{'box-success' : file.decrypted,'box-error':file.decryption_error}">
+                        <div class="file box rounded-md px-5 pt-8 pb-5 px-3 sm:px-5 relative zoom-in" [ngClass]="{'box-success' : file.decrypted,'box-error':file.decryption_error}">
                             <div class="absolute left-0 top-0 mt-3 ml-3" *ngIf="file.decrypted">
                                 <!-- <input class="form-check-input border border-slate-500" type="checkbox" checked> -->
                                 ✅
@@ -75,8 +70,7 @@
                             <a class="w-3/5 file__icon file__icon--file mx-auto">
                                 <div class="file__icon__file-name">{{file.extension}}</div>
                             </a>
-                            <a class="block font-medium mt-4 text-center truncate"
-                                title="{{file.path}}">{{file.name}}</a>
+                            <a class="block font-medium mt-4 text-center truncate" title="{{file.path}}">{{file.name}}</a>
                             <div class="text-slate-500 text-xs text-center mt-0.5">{{file.size_in_kb | number:'.2' }} KB
                             </div>
                         </div>
@@ -91,19 +85,15 @@
         <ng-container *ngIf="!FILE_SELECTION_ENABLED">
             <div class="intro-y grid grid-cols-12 gap-3 sm:gap-6 mt-5 folder_section">
                 <div class="intro-y col-span-4 sm:col-span-4 md:col-span-3 2xl:col-span-2">
-                    <div class="file box rounded-md px-5 pt-8 pb-5 px-3 sm:px-5 relative zoom-in"
-                        *ngIf="decrypt_dir_obj.length!=0">
+                    <div class="file box rounded-md px-5 pt-8 pb-5 px-3 sm:px-5 relative zoom-in" *ngIf="decrypt_dir_obj.length!=0">
                         <a class="w-3/5 file__icon file__icon--directory mx-auto"></a>
-                        <a class="block font-medium mt-4 text-center truncate"
-                            title="{{decryption_selected_folder}}">{{get_selected_folder_name(decryption_selected_folder)}}</a>
+                        <a class="block font-medium mt-4 text-center truncate" title="{{decryption_selected_folder}}">{{get_selected_folder_name(decryption_selected_folder)}}</a>
                     </div>
                 </div>
                 <div class="intro-y col-span-8 sm:col-span-8 md:col-span-9 2xl:col-span-10">
                     <ng-template #ul_li let-obj>
-                        <ul
-                            class="text-base font-medium text-gray-900 bg-dark border border-gray-200 rounded-lg dark:border-gray-600 ">
-                            <li class="w-full px-5 py-2 border-b border-gray-200 rounded-t-lg dark:border-gray-600 text-white"
-                                *ngFor="let file of obj">
+                        <ul class="text-base font-medium text-gray-900 bg-dark border border-gray-200 rounded-lg dark:border-gray-600 ">
+                            <li class="w-full px-5 py-2 border-b border-gray-200 rounded-t-lg dark:border-gray-600 text-white" *ngFor="let file of obj">
                                 <ng-container *ngIf="file.children; else elseBlock">
                                     <i class="fa-solid fa-folder"></i> &nbsp;&nbsp; {{file.name}}
                                 </ng-container>
@@ -120,8 +110,7 @@
                             </li>
                         </ul>
                     </ng-template>
-                    <ng-template *ngIf="decrypt_dir_obj.length!=0" [ngTemplateOutlet]="ul_li"
-                        [ngTemplateOutletContext]="{ $implicit: decrypt_dir_obj}">
+                    <ng-template *ngIf="decrypt_dir_obj.length!=0" [ngTemplateOutlet]="ul_li" [ngTemplateOutletContext]="{ $implicit: decrypt_dir_obj}">
                     </ng-template>
                 </div>
             </div>
@@ -135,10 +124,11 @@
             <button class="btn btn-primary shadow-md mr-2 mt-4" (click)="set_decrypt_in_place()">
                 Decrypt in Place
             </button> -->
-            <ul class="grid w-full gap-6 md:grid-cols-2">
+            <ul class="grid w-full gap-6 md:grid-cols-2 mt-3">
                 <li>
                     <input type="radio" id="hosting-small" name="select_destination" value="decrypt_in_destination" class="hidden peer" required (click)="select_decryption_destination_folder()">
-                    <label for="hosting-small" class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-dark border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">                           
+                    <label for="hosting-small"
+                        class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-dark border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
                         <div class="block">
                             <div class="w-full text-lg font-semibold">Select Destination Folder</div>
                             <div class="w-full">Make a decrypted copy of files.</div>
@@ -147,12 +137,15 @@
                                 <span class="font-bold">Decryption path:</span> <span class="ml-2 dark:text-slate-200">{{decryption_destination_folder}} </span>
                             </span>
                         </div>
-                        <svg aria-hidden="true" class="w-6 h-6 ml-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        <svg aria-hidden="true" class="w-6 h-6 ml-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
                     </label>
                 </li>
                 <li>
                     <input type="radio" id="hosting-big" name="select_destination" value="decrypt_in_place" class="hidden peer" (click)="set_decrypt_in_place()">
-                    <label for="hosting-big" class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-dark border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
+                    <label for="hosting-big"
+                        class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-dark border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
                         <div class="block">
                             <div class="w-full text-lg font-semibold">Decrypt in place</div>
                             <div class="w-full">Replace files with decrypted files</div>
@@ -161,29 +154,39 @@
                                 <span class="font-bold">Decryption path:</span> <span class="ml-2 dark:text-slate-200">{{decryption_destination_folder}} </span>
                             </span>
                         </div>
-                        <svg aria-hidden="true" class="w-6 h-6 ml-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        <svg aria-hidden="true" class="w-6 h-6 ml-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
                     </label>
+                    
                 </li>
             </ul>
-
-            <div class="block my-2">
-                <label for="helper-text" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    Secret Key
-                </label>
-                <div>
-                    <input type="text" id="helper-text" aria-describedby="helper-text-explanation"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 inline w-75 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="s3creT" (keyup)="shared_functions.change_key($event)"
-                        value="{{shared_functions.key}}" autocomplete="off">
-                    <button class="btn btn-primary shadow-md ml-5" 
-                    (click)="decrypt()" [disabled]="decryption_started">
-                        Decrypt All
-                    </button>
+            <!-- #region Enter Secret -->
+            <div class="mt-4">
+                <label for="helper-text" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Secret Key</label>
+                <div class="grid grid-cols-12">
+                    <div class=" col-span-4">
+                        <div class="relative w-75">
+                            <div class="absolute inset-y-0 right-0 flex items-center px-2">
+                                <input class="dark hidden js-password-toggle bg-transparent" id="toggle" type="checkbox" (change)="toggle_key_visibility()" />
+                                <label class="dark:bg-gray-300 hover:bg-gray-400 rounded px-2 py-1 text-sm text-gray-600 cursor-pointer js-password-label" #js_password_label for="toggle">show</label>
+                            </div>
+                            <input class="appearance-none border rounded-lg w-full dark:bg-gray-700 dark:border-gray-600 focus:outline-none text-white js-password" id="password" type="password" autocomplete="off" #js_password placeholder="s3creT"
+                            (keyup)="shared_functions.change_key($event)" value="{{shared_functions.key}}"/>
+                        </div>
+                    </div>
+                    <div class="col-span-2">
+                        <button class="btn btn-primary shadow-md ml-5" (click)="decrypt()" [disabled]="decryption_started">
+                            Decrypt All
+                        </button>
+                    </div>
+                    <div class="col-span-6"></div>
                 </div>
                 <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    Enter your secret key to decrypt the files.
+                    Enter your desired secret key to encrypt the files.
                 </p>
             </div>
+            <!-- #endregion -->
         </ng-container>
 
 
@@ -193,13 +196,9 @@
 </div>
 
 <div class="errors_div mt-4" *ngIf="decrypt_errors.length">
-    <div class="flex p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
-        role="alert">
-        <svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                clip-rule="evenodd"></path>
+    <div class="flex p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+        <svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
         </svg>
         <div>
             <span class="font-medium">Error Decrypting Files</span>
@@ -211,13 +210,9 @@
     </div>
 </div>
 <div class="errors_div mt-4" *ngIf="other_errors.length">
-    <div class="flex p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
-        role="alert">
-        <svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                clip-rule="evenodd"></path>
+    <div class="flex p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+        <svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
         </svg>
         <div>
             <span class="font-medium">Errors</span>
