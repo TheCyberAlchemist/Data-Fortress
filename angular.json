@@ -35,7 +35,6 @@
               "src/assets/css/app.css"
             ],
             "scripts": [
-              "src/assets/js/app.js"
             ]
           },
           "configurations": {

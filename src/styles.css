@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url(d:\Work\Tauri-Encrypt\node_modules\tailwindcss\base.css);
+@import url(d:\Work\Tauri-Encrypt\node_modules\tailwindcss\components.css);
+@import url(d:\Work\Tauri-Encrypt\node_modules\tailwindcss\utilities.css);
 :root {
   --primary: #1b253b;
   --secondary: #232d45;
