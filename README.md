@@ -46,7 +46,7 @@ Start the server
 ```
 ## 📥 How to Download
 - You can Download the installer or executable suitable to you target OS.
-- You can find these files [here 🔗](https://github.com/TheCyberAlchemist/Data-Fortress/releases/tag/v0.9.1)
+- You can find these files [here 🔗](https://github.com/TheCyberAlchemist/Data-Fortress/releases/tag/v0.9.2)
 
 
 ## ⚠️ Disclaimer
